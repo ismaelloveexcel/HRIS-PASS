@@ -1,0 +1,465 @@
+{
+  "theme": {
+    "style": "glassmorphism",
+    "primary_color": "#00A0DF",
+    "accent_color": "#34D399",
+    "background": {
+      "glow": true,
+      "tint": "rgba(0,160,223,0.08)"
+    },
+    "font": "Inter, sans-serif",
+    "shadows": "soft"
+  },
+  "shared_behaviour": {
+    "status_chips": {
+      "default": ["info", "warning", "success", "critical"],
+      "icons": {
+        "info": "circle-info",
+        "warning": "triangle-alert",
+        "success": "circle-check",
+        "critical": "octagon-alert"
+      }
+    },
+    "qr_button": {
+      "icon": "qr",
+      "tap_action": "open_link",
+      "scan_action": "open_link"
+    },
+    "notes_module": {
+      "permissions": {
+        "hr": "read_write",
+        "manager": "read_write",
+        "candidate": "read_only",
+        "employee": "read_write"
+      }
+    }
+  },
+  "passes": {
+    "manager": {
+      "mini_app": true,
+      "landing_card": {
+        "fields": {
+          "manager_name": "{{manager_name}}",
+          "role": "{{role_title}}",
+          "department": "{{manager_department}}",
+          "pending_approvals": "{{pending_approvals_count}}"
+        },
+        "qr_button": {
+          "destination": "{{manager_portal_url}}",
+          "label": "Open Manager Portal"
+        },
+        "badges": [
+          {
+            "label": "Recruitment Load",
+            "value": "{{open_positions_count}}"
+          }
+        ]
+      },
+      "core_actions": [
+        "recruitment_overview",
+        "approvals_board",
+        "interview_management",
+        "score_panel",
+        "timeline_view",
+        "inbox"
+      ],
+      "navigation": {
+        "tabs": [
+          {"id": "recruitment", "label": "Recruitment"},
+          {"id": "approvals", "label": "Approvals"},
+          {"id": "interviews", "label": "Interviews"},
+          {"id": "timeline", "label": "Timeline"},
+          {"id": "inbox", "label": "Inbox"}
+        ]
+      },
+      "modules": {
+        "recruitment_overview": {
+          "data_points": [
+            "open_positions",
+            "candidates_by_stage",
+            "status_filters"
+          ],
+          "filters": ["stage", "location", "role"],
+          "actions": ["open_position", "view_candidate"]
+        },
+        "approvals_board": {
+          "queues": [
+            "job_requisitions",
+            "candidate_shortlists",
+            "interview_requests",
+            "offer_approvals"
+          ],
+          "actions": ["approve", "reject", "delegate", "comment"],
+          "auto_escalation": {
+            "enabled": true,
+            "threshold_hours": 48
+          }
+        },
+        "interview_management": {
+          "views": ["schedule", "reschedule", "feedback"],
+          "data_points": [
+            "interview_datetime",
+            "panel_list",
+            "candidate_profile"
+          ],
+          "actions": ["reschedule", "add_feedback", "add_score"]
+        },
+        "score_panel": {
+          "scorecards": ["profile_fit", "technical", "soft_skills", "culture"],
+          "notes": {
+            "visibility": "manager_hr_only",
+            "allow_attachments": true
+          }
+        },
+        "timeline_view": {
+          "stages": [
+            "application",
+            "screening",
+            "interview",
+            "offer"
+          ],
+          "highlight_actions": ["manager_comments", "approved_events"]
+        },
+        "inbox": {
+          "channels": ["hr_messages", "candidate_alerts", "approval_reminders"],
+          "filters": ["unread", "approvals", "alerts"]
+        }
+      },
+      "optional_layers": ["notes_module", "attachments_panel"],
+      "data_sources": [
+        "SharePoint:ManagerAssignments",
+        "Dataverse:InterviewSchedule",
+        "PowerAutomate:ApprovalsFlow"
+      ]
+    },
+    "candidate": {
+      "mini_app": true,
+      "landing_card": {
+        "fields": {
+          "candidate_name": "{{candidate_name}}",
+          "position_title": "{{position_title}}",
+          "candidate_id": "{{candidate_id}}",
+          "position_ref": "{{position_ref}}",
+          "current_stage": "{{current_stage}}",
+          "current_status": "{{current_status}}"
+        },
+        "qr_button": {
+          "destination": "{{candidate_profile_url}}",
+          "label": "View Full Profile"
+        },
+        "toggles": [
+          {
+            "id": "whatsapp_updates",
+            "label": "WhatsApp Updates",
+            "type": "switch",
+            "value": "{{whatsapp_enabled}}"
+          }
+        ]
+      },
+      "core_actions": [
+        "next_action",
+        "evaluation_summary",
+        "timeline_view",
+        "inbox_view",
+        "documents_view"
+      ],
+      "navigation": {
+        "tabs": [
+          {"id": "next_action", "label": "Next Action"},
+          {"id": "evaluation_summary", "label": "Evaluation"},
+          {"id": "timeline_view", "label": "Timeline"},
+          {"id": "inbox_view", "label": "Inbox"},
+          {
+            "id": "documents_view",
+            "label": "Docs",
+            "optional": true,
+            "visible_if": "{{documents_available}}"
+          }
+        ]
+      },
+      "modules": {
+        "next_action": {
+          "visible_if": "{{has_next_action}}",
+          "data": {
+            "interview": {
+              "schedule": "{{interview_datetime}}",
+              "location": "{{interview_location}}",
+              "links": "{{meeting_links}}"
+            },
+            "assessment": {
+              "pending_task": "{{assessment_name}}",
+              "deadline": "{{assessment_due}}"
+            },
+            "offer": {
+              "steps": [
+                "Approve offer terms",
+                "Send offer letter",
+                "Await candidate acceptance"
+              ]
+            },
+            "onboarding": {
+              "requirements": [
+                "Upload Emirates ID",
+                "Upload Passport",
+                "Upload Visa Copy"
+              ]
+            }
+          }
+        },
+        "evaluation_summary": {
+          "score_rings": {
+            "profile_fit": "{{score_profile_fit}}",
+            "soft_skills": "{{score_soft_skills}}",
+            "technical_skills": "{{score_technical_skills}}",
+            "interview_score": "{{score_interview}}"
+          },
+          "legend": ["Low", "Medium", "High"]
+        },
+        "timeline_view": {
+          "items": [
+            {"stage": "Application", "timestamp": "{{ts_application}}", "status": "{{st_application}}"},
+            {"stage": "Screening", "timestamp": "{{ts_screening}}", "status": "{{st_screening}}"},
+            {"stage": "Assessment", "timestamp": "{{ts_assessment}}", "status": "{{st_assessment}}"},
+            {"stage": "Interview", "timestamp": "{{ts_interview}}", "status": "{{st_interview}}"},
+            {"stage": "Offer", "timestamp": "{{ts_offer}}", "status": "{{st_offer}}"},
+            {"stage": "Onboarding", "timestamp": "{{ts_onboarding}}", "status": "{{st_onboarding}}"}
+          ]
+        },
+        "inbox_view": {
+          "features": {
+            "notes": {
+              "allow_hr_to_write": true,
+              "allow_manager_to_reply": true,
+              "allow_candidate_reply": false
+            },
+            "uploads": {
+              "allowed_file_types": ["pdf", "jpg", "png"],
+              "max_size_mb": 20
+            }
+          }
+        },
+        "documents_view": {
+          "enabled_if": "{{documents_available}}",
+          "files": [
+            {
+              "name": "{{cv_name}}",
+              "url": "{{cv_url}}",
+              "type": "application/pdf"
+            },
+            {
+              "name": "{{assessment_report_name}}",
+              "url": "{{assessment_report_url}}",
+              "type": "application/pdf"
+            }
+          ]
+        }
+      },
+      "optional_layers": ["notes_module", "documents_view"],
+      "data_sources": [
+        "Dataverse:CandidateProfile",
+        "SharePoint:CandidateDocs",
+        "PowerAutomate:WhatsAppOptIn"
+      ]
+    },
+    "onboarding": {
+      "mini_app": true,
+      "landing_card": {
+        "fields": {
+          "full_name": "{{candidate_name}}",
+          "position": "{{position_title}}",
+          "date_of_joining": "{{date_of_joining}}",
+          "status": "{{onboarding_status}}"
+        },
+        "qr_button": {
+          "destination": "{{onboarding_portal_url}}",
+          "label": "Open Onboarding Portal"
+        }
+      },
+      "core_actions": [
+        "document_checklist",
+        "offer_and_contract",
+        "onboarding_tasks",
+        "orientation_schedule",
+        "timeline_view",
+        "inbox_view"
+      ],
+      "navigation": {
+        "tabs": [
+          {"id": "tasks", "label": "Tasks"},
+          {"id": "documents", "label": "Documents"},
+          {"id": "contract", "label": "Contract"},
+          {"id": "timeline", "label": "Timeline"},
+          {"id": "inbox", "label": "Inbox"}
+        ]
+      },
+      "modules": {
+        "document_checklist": {
+          "items": [
+            "Passport",
+            "Visa Copy",
+            "Emirates ID",
+            "Photo",
+            "Bank Details",
+            "Education Certificates"
+          ],
+          "status_badges": ["uploaded", "pending", "rejected"],
+          "auto_reminders": {
+            "enabled": true,
+            "frequency_days": 2
+          }
+        },
+        "offer_and_contract": {
+          "documents": [
+            {"label": "Offer Letter", "url": "{{offer_letter_url}}"},
+            {"label": "Employment Contract", "url": "{{contract_url}}"}
+          ],
+          "signatory_flow": ["hr", "management", "candidate"],
+          "status_tracking": true
+        },
+        "onboarding_tasks": {
+          "tasks": [
+            "HR approvals",
+            "Security clearance",
+            "Medical",
+            "Insurance registration",
+            "IT setup",
+            "Access card",
+            "Laptop / Email"
+          ],
+          "progress": "{{onboarding_task_progress}}"
+        },
+        "orientation_schedule": {
+          "agenda": "{{orientation_agenda}}",
+          "buddy": "{{assigned_buddy}}",
+          "location": "{{orientation_location}}"
+        },
+        "timeline_view": {
+          "stages": [
+            "Offer",
+            "Documents",
+            "Visa",
+            "Medical",
+            "EID",
+            "HR Clearance",
+            "Day 1"
+          ],
+          "timestamps": "{{onboarding_stage_timestamps}}"
+        },
+        "inbox_view": {
+          "channels": ["hr_messages", "document_requests"],
+          "uploads": {
+            "allowed_file_types": ["pdf", "jpg", "png"],
+            "max_size_mb": 50
+          }
+        }
+      },
+      "optional_layers": ["notes_module", "orientation_schedule"],
+      "data_sources": [
+        "SharePoint:OnboardingChecklist",
+        "Dataverse:Contracts",
+        "PowerAutomate:OnboardingAlerts"
+      ]
+    },
+    "employee": {
+      "mini_app": true,
+      "landing_card": {
+        "fields": {
+          "employee_name": "{{employee_name}}",
+          "employee_id": "{{employee_id}}",
+          "job_title": "{{job_title}}",
+          "department": "{{department_name}}"
+        },
+        "qr_button": {
+          "destination": "{{employee_self_service_url}}",
+          "label": "Open ESS"
+        },
+        "badges": [
+          {"label": "Status", "value": "{{employment_status}}"}
+        ]
+      },
+      "core_actions": [
+        "profile_summary",
+        "leave_module",
+        "documents_module",
+        "requests_module",
+        "timeline_view",
+        "inbox_notifications"
+      ],
+      "navigation": {
+        "tabs": [
+          {"id": "profile", "label": "Profile"},
+          {"id": "leave", "label": "Leave"},
+          {"id": "documents", "label": "Documents"},
+          {"id": "requests", "label": "Requests"},
+          {"id": "timeline", "label": "Timeline"},
+          {"id": "inbox", "label": "Inbox"}
+        ]
+      },
+      "modules": {
+        "profile_summary": {
+          "sections": [
+            "personal_info",
+            "contact",
+            "visa_passport_eid",
+            "medical_insurance"
+          ],
+          "expiries_tracking": true
+        },
+        "leave_module": {
+          "leave_balance": "{{leave_balance}}",
+          "actions": ["new_request", "view_history"],
+          "approval_flow": "manager_then_hr"
+        },
+        "documents_module": {
+          "documents": [
+            "salary_certificate",
+            "employment_letter",
+            "payslips",
+            "contract"
+          ],
+          "generation": {
+            "instant": ["salary_certificate", "employment_letter"],
+            "manual": ["contract"]
+          }
+        },
+        "requests_module": {
+          "request_types": [
+            "reimbursement",
+            "bank_change",
+            "grievance",
+            "hr_support"
+          ],
+          "attachments_required": {
+            "reimbursement": true,
+            "bank_change": true,
+            "grievance": false,
+            "hr_support": false
+          }
+        },
+        "timeline_view": {
+          "events": [
+            "onboarding_complete",
+            "probation_reviews",
+            "year_one_completion",
+            "promotions"
+          ],
+          "data_binding": "{{employee_milestones}}"
+        },
+        "inbox_notifications": {
+          "channels": [
+            "hr_circulars",
+            "approval_responses",
+            "document_ready"
+          ],
+          "filters": ["unread", "action_required"]
+        }
+      },
+      "optional_layers": ["notes_module", "documents_module"],
+      "data_sources": [
+        "Dataverse:EmployeeProfile",
+        "SharePoint:DocumentsLibrary",
+        "PowerAutomate:EmployeeAlerts"
+      ]
+    }
+  }
+}
