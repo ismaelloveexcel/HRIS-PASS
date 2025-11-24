@@ -1,0 +1,236 @@
+:root {
+  color: #f4f7ff;
+  font-family: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --panel: rgba(10, 12, 26, 0.65);
+  --panel-border: rgba(255, 255, 255, 0.08);
+  --accent: #ff5ea1;
+  --accent-2: #4ef0ff;
+  --bg: radial-gradient(circle at top, #0e1736 0%, #04070f 60%, #020309 100%);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background-image: var(--bg);
+  color: inherit;
+}
+
+.layout {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  padding: 1.5rem;
+  min-height: 100vh;
+}
+
+#experience {
+  flex: 1 1 640px;
+  min-height: 80vh;
+  border-radius: 1.25rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+  background: linear-gradient(180deg, #030815 0%, #010205 100%);
+  position: relative;
+}
+
+.hud {
+  flex: 0 0 320px;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.hud__header {
+  padding: 1rem 1.25rem;
+  border-radius: 1.25rem;
+  background: var(--panel);
+  border: 1px solid var(--panel-border);
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.35);
+}
+
+.panel {
+  padding: 1rem 1.25rem;
+  border-radius: 1.25rem;
+  background: var(--panel);
+  border: 1px solid var(--panel-border);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.35);
+}
+
+.dice-panel {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: center;
+}
+
+.primary {
+  flex: 1;
+  border: none;
+  border-radius: 0.9rem;
+  font-size: 1rem;
+  font-weight: 600;
+  padding: 0.85rem 1rem;
+  background: linear-gradient(120deg, #ff5ea1, #ff906a);
+  color: white;
+  cursor: pointer;
+  transition: transform 180ms ease, opacity 180ms ease;
+}
+
+.primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.primary:not(:disabled):hover {
+  transform: translateY(-2px);
+}
+
+.dice-readout {
+  min-width: 70px;
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.label {
+  display: block;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  opacity: 0.65;
+  letter-spacing: 0.08em;
+}
+
+.stats-panel {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+  font-weight: 600;
+}
+
+.log-panel ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  max-height: 200px;
+  overflow: auto;
+}
+
+.log-panel li {
+  padding: 0.65rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  font-size: 0.95rem;
+  line-height: 1.35;
+}
+
+.tip-panel p {
+  margin: 0;
+  line-height: 1.5;
+}
+
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(1, 2, 8, 0.78);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+
+.modal.hidden {
+  display: none;
+}
+
+.modal-content {
+  width: min(480px, 90vw);
+  padding: 1.5rem;
+  border-radius: 1.5rem;
+  background: #0d1328;
+  border: 1px solid var(--panel-border);
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.45);
+}
+
+.modal .meta {
+  text-transform: uppercase;
+  font-size: 0.8rem;
+  letter-spacing: 0.2em;
+  color: var(--accent-2);
+}
+
+.answers {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-block: 1.25rem;
+}
+
+.answers button {
+  border-radius: 0.85rem;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.04);
+  color: inherit;
+  font-size: 1rem;
+  padding: 0.85rem 1rem;
+  cursor: pointer;
+  text-align: left;
+  transition: border 180ms ease, transform 180ms ease;
+}
+
+.answers button:hover {
+  border-color: var(--accent);
+  transform: translateX(4px);
+}
+
+.footnote {
+  opacity: 0.75;
+  font-size: 0.85rem;
+}
+
+.toast {
+  position: fixed;
+  bottom: 1.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 0.9rem 1.25rem;
+  border-radius: 999px;
+  background: rgba(5, 10, 25, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+}
+
+.toast.hidden {
+  display: none;
+}
+
+@media (max-width: 1024px) {
+  .hud {
+    flex-basis: 100%;
+  }
+
+  #experience {
+    flex-basis: 100%;
+    min-height: 60vh;
+  }
+}
+
+@media (max-width: 640px) {
+  .layout {
+    padding: 1rem;
+  }
+
+  .panel,
+  .hud__header {
+    padding: 1rem;
+  }
+
+  .dice-panel {
+    flex-direction: column;
+  }
+}
