@@ -4,9 +4,15 @@
 - **Audience:** 9–16 year-olds looking for replayable learning games; VR enthusiasts who like party games inspired by classic board IP.
 
 ## Experience Pillars
-1. **Tactile Board Presence:** A floating, holographic 10×10 grid towers above a stylized arena. Players see giant sculpted snakes/ladders twisting through space; ladders double as elevators, snakes as slides.
+1. **Tactile Board Presence:** The board is carved into a floating island that drifts above a glowing ocean. Transparent tiles reveal circling sharks below, adding thrill each time a pawn teeters near the edge. Sculpted snakes coil around palm trees while ladders extend as bamboo elevators hugging the island rim.
 2. **High-stakes Trivia Lifelines:** Landing on a snake triggers a “Red Light” challenge room. Beat the quiz to stay in place; fail and watch the snake drag you backwards.
 3. **Squid Game Drama:** Guards, neon lighting, and round masks frame the lifeline events. Quiz time is limited by a looming “glass bridge” timer; wrong answers crack the floor beneath you.
+4. **Sunrise-to-Sunset Drama:** Matches play through an accelerated day-night cycle—warm sunrise for opening turns, golden hour intensity mid-game, and high-contrast neon nights for final rolls.
+
+## Floating Island Atmosphere
+- **Environmental Storytelling:** The island is dotted with mini-temples, shark warning drums, and Squid Game guard towers that telescope out of the sand. Each snake mouth aligns with a cliffside slide that threatens to fling players toward the shark-infested waters.
+- **Shark Layer:** Animated megasharks breach whenever a player fails a quiz or falls down a snake, reinforcing the stakes while keeping the tone adventurous rather than scary.
+- **Dynamic Skybox:** Clouds streak across the horizon and the sun traverses the sky every match. Lighting subtly changes quiz rooms, so sunrise quizzes feel calmer while nighttime ones pulse with neon outlines inspired by Squid Game aesthetics.
 
 ## Core Loop
 1. Roll (motion-based in VR; swipe/tap dice on mobile).
@@ -22,30 +28,30 @@
   2. Host NPC (frontman style) delivers context + question theme.
   3. Quiz types: multiple choice, order sequencing, “repeat the pattern while answering”.
   4. Success = immunity; snake becomes a temporary ladder for that player.
-  5. Failure = classic snake penalty, but distance scales with difficulty.
+  5. Failure = classic snake penalty, but distance scales with difficulty and plays a “shark surge” sequence where the pawn nearly splashes before being yanked back to its new tile.
 - **Question Pools:** STEM, pop culture, Squid Game lore, custom classroom packs.
 - **Difficulty Scaling:** Later snakes require two linked questions; co-op mode lets teammates whisper hints via proximity voice.
 
 ## Squid Game Integration Concepts
-- **Visual Motifs:** Pink guard NPCs manage quiz rooms; arenas shaped like iconic sets (Glass Bridge, Tug-of-War platforms).
+- **Visual Motifs:** Pink guard NPCs man lookout towers along the island edge; quiz rooms rise from underwater shafts shaped like iconic sets (Glass Bridge, Tug-of-War platforms).
 - **Mini-challenges:** Some ladders lead to “Prize Vaults” inspired by Squid Game piggy bank—collect tokens to spend on skins.
 - **Limited-time Events:** Seasonal “Glass Bridge Gauntlet” where ladders are replaced by chance-based tiles riffing on the show’s tension.
-- **Narrative Hook:** Players are contestants in a benevolent variant of Squid Games, competing for knowledge crowns rather than survival.
+- **Narrative Hook:** Players wash ashore on the floating island as contestants in a benevolent Squid Game remix, competing for knowledge crowns rather than survival while sharks patrol the depths as a symbolic reminder to keep moving.
 
 ## Platform-Specific Notes
 ### Meta Quest
-- **Locomotion:** Stationary board with room-scale gestures; dice roll by physically throwing a tracked die object.
-- **Interaction:** Hand tracking for selecting answers; haptic feedback when snakes grab the avatar.
-- **Immersion Beats:** Use depth audio (3D spatialized) for snakes hiss behind players, frontman voice overhead.
+- **Locomotion:** Stationary board with room-scale gestures; dice roll by physically throwing a tracked die object toward the island center.
+- **Interaction:** Hand tracking for selecting answers; haptic feedback when snakes grab the avatar or when sharks brush past the island base.
+- **Immersion Beats:** Depth audio layers crashing waves, distant shark splashes, and the frontman voice overhead. Real-time lighting shifts sell the sunrise-to-sunset arc inside the headset.
 
 ### Mobile (Phones & Tablets)
-- **Camera Modes:** Default is isometric 3D; optional AR mode projects the board on tables.
+- **Camera Modes:** Default is isometric 3D with a sweeping sunrise-to-sunset gradient; optional AR mode projects the board on tables.
 - **Controls:** Tap-to-roll, drag pawn, large quiz buttons with emojis for faster comprehension.
 - **Multiplayer:** Async turns via push notifications; quiz segments playable in real-time with quick-match timers.
 
 ## Game Modes
-- **Solo Campaign:** Procedural boards with escalating Squid Game narratives.
-- **Party VR:** Up to 4 players in the same Quest lobby, taking turns on a shared board floating between them.
+- **Solo Campaign:** Procedural boards with escalating Squid Game narratives plus unique island weather presets (stormy dusk, clear sunrise, neon midnight).
+- **Party VR:** Up to 4 players in the same Quest lobby, taking turns on a shared island hovering between them while sharks react to every failed quiz in real time.
 - **Cross-platform Online:** Turn-based ladder leagues; quiz responses happen simultaneously to reduce downtime.
 - **Education Packs:** Teachers upload quiz sets; snakes transform into pop quizzes relevant to class material.
 
