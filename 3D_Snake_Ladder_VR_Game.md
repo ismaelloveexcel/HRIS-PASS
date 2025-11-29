@@ -309,7 +309,7 @@
 |-------|-------|----------|---------------|
 | Unit Testing | Core mechanics | Ongoing | 100% pass rate |
 | Integration | Cross-platform sync | 2 weeks | Zero desync issues |
-| Performance | FPS, load times | 2 weeks | 72 FPS VR, 60 FPS mobile |
+| Performance | FPS, load times | 2 weeks | 90 FPS VR, 60 FPS mobile |
 | Usability | FTUE completion | 1 week | 90% completion rate |
 | Accessibility | A11y compliance | 1 week | WCAG 2.1 AA equivalent |
 | Stress | 1000+ concurrent users | 1 week | <100ms latency |
@@ -343,7 +343,7 @@
 - [ ] Localization complete for launch languages
 - [ ] App store listings prepared (screenshots, videos, descriptions)
 - [ ] Privacy policy and Terms of Service finalized
-- [ ] COPPA and GDPR-K compliance verified
+- [ ] COPPA and GDPR (children's data) compliance verified
 - [ ] Age rating submissions (ESRB, PEGI, IARC)
 - [ ] Backend infrastructure load tested
 - [ ] Customer support workflows established
@@ -432,7 +432,7 @@ This document represents the complete design vision for *Ascend: Serpent Trials*
 5. Sustainable live ops with regular content updates
 
 **Next Steps:**
-1. Finalize Squid Game homage legal review
+1. Finalize survival game aesthetic legal review
 2. Begin Unity project setup with URP and XR toolkit
 3. Create first playable prototype with single board
 4. Initiate user research with target demographic
