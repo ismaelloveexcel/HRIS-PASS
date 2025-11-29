@@ -281,10 +281,12 @@ async function movePawnBy(steps) {
     logEvent("The die overshoots the crown. Hold position.");
     return false;
   }
+  const targetTile = state.currentTile + steps;
   state.isAnimating = true;
   const startTile = state.currentTile;
   const targetTile = startTile + steps; // precompute endpoint
   for (let tile = startTile + 1; tile <= targetTile; tile += 1) {
+  for (let tile = state.currentTile + 1; tile <= targetTile; tile += 1) {
     await tweenToTile(tile);
     state.currentTile = tile;
     highlightTile(tile);
