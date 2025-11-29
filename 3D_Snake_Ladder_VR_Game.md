@@ -29,7 +29,8 @@
   3. Quiz types: multiple choice, order sequencing, “repeat the pattern while answering”.
   4. Success = immunity; snake becomes a temporary ladder for that player.
   5. Failure = classic snake penalty, but distance scales with difficulty and plays a “shark surge” sequence where the pawn nearly splashes before being yanked back to its new tile.
-- **Question Pools:** STEM, pop culture, Squid Game lore, custom classroom packs.
+- **Topic Selection:** At match setup players (or the host in party play) pick the quiz topic that will drive all lifeline questions. Topics tuned for ages 8–12 include Maths, Science, French (beginners), Arabic (beginners), General Knowledge, Movies, Animes, Series, and a Mixed option that shuffles across all banks.
+- **Question Pools:** Every topic pulls from curated banks written for reading levels and cultural references that resonate with 8–12-year-olds; localized variants and classroom packs still plug in via the same tagging system.
 - **Difficulty Scaling:** Later snakes require two linked questions; co-op mode lets teammates whisper hints via proximity voice.
 
 ## Squid Game Integration Concepts
@@ -80,3 +81,14 @@
 - **Comfort in VR:** Limit camera motion, offer teleport-free experience, add comfort vignette during snakes/ladders.
 - **Quiz Fatigue:** Rotate mechanics, integrate voiceover hints, reward even failed attempts with partial XP.
 - **Cross-platform Sync:** Build deterministic board logic, server-authoritative question timers to avoid cheating.
+
+## Remaining Steps to Full Functionality
+1. **Lock Preproduction Artifacts:** Finalize art bible, Squid Game homage guidelines, voice/character scripts, and the database schema that supports the nine kid-friendly quiz topics.
+2. **Author & Localize Question Banks:** Produce 8–12-year-old appropriate Maths, Science, French, Arabic, General Knowledge, Movies, Animes, Series, and Mixed question sets with educator review plus age-rating QA.
+3. **Build Topic Selection UX:** Prototype the lobby picker (VR hand gestures + mobile taps), host override in multiplayer, and the back-end call that seeds a match with the chosen topic.
+4. **Implement Quiz Service & Analytics:** Stand up the Firebase/PlayFab service, connect it to deterministic match IDs, and pipe accuracy metrics back for adaptive difficulty.
+5. **Complete Core Gameplay Systems:** Finish dice physics, pawn conveyors, snake/ladders cinematics, lifeline quiz rooms, and reward payouts aligned with topic performance.
+6. **Harden Networking & Cross-play:** Validate deterministic board sync, Photon/Netcode session management, voice chat proximity, and async mobile turn handling.
+7. **Expand Content & Progression:** Integrate cosmetics, Glass Token economy, battle pass hooks, and seasonal Squid Game-style events tied to quiz streaks.
+8. **Polish Platform-specific Features:** Implement Quest comfort options, haptics, AR board projection, accessibility toggles, and parent/teacher dashboards.
+9. **QA, Compliance & Launch Ops:** Run localization, accessibility, and age-rating tests; complete privacy reviews, store submissions, marketing capture, and live-ops monitoring plans.
