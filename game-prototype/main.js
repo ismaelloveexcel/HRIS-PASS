@@ -147,7 +147,12 @@ scene.fog = new THREE.FogExp2(0x040714, 0.08);
 const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
 renderer.setPixelRatio(window.devicePixelRatio);
 renderer.setSize(container.clientWidth, container.clientHeight);
-renderer.outputColorSpace = THREE.SRGBColorSpace;
+// color-space compatibility across three.js versions
+if ('outputColorSpace' in renderer) {
+  renderer.outputColorSpace = THREE.SRGBColorSpace;
+} else if ('outputEncoding' in renderer) {
+  renderer.outputEncoding = THREE.sRGBEncoding;
+}
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
 renderer.toneMappingExposure = 1.05;
 renderer.shadowMap.enabled = true;
@@ -171,7 +176,7 @@ controls.target.set(0, 0, 0);
 
 const sunLight = new THREE.DirectionalLight(0xfff1c1, 1.1);
 sunLight.castShadow = true;
-sunLight.shadow.mapSize.set(1024, 1024);
+sunLight.shadow.mapSize.set(512, 512);
 sunLight.position.set(-4, 6, 5);
 scene.add(sunLight);
 
@@ -277,7 +282,9 @@ async function movePawnBy(steps) {
     return false;
   }
   state.isAnimating = true;
-  for (let tile = state.currentTile + 1; tile <= state.currentTile + steps; tile += 1) {
+  const startTile = state.currentTile;
+  const targetTile = startTile + steps; // precompute endpoint
+  for (let tile = startTile + 1; tile <= targetTile; tile += 1) {
     await tweenToTile(tile);
     state.currentTile = tile;
     highlightTile(tile);
@@ -523,7 +530,7 @@ function createSnakes() {
     control.z += (Math.random() - 0.5) * 1.5;
     control.y += 0.6;
     const curve = new THREE.QuadraticBezierCurve3(start, control, end);
-    const geometry = new THREE.TubeGeometry(curve, 48, 0.08, 16, false);
+    const geometry = new THREE.TubeGeometry(curve, 32, 0.08, 8, false);
     const material = new THREE.MeshStandardMaterial({
       color: new THREE.Color().setHSL(0.97 - index * 0.08, 0.65, 0.55),
       metalness: 0.25,
