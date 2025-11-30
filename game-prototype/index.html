@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Ascend: Serpent Trials — Prototype Slice</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="layout">
+      <section id="experience" aria-label="3D board viewport"></section>
+      <section class="hud" aria-live="polite">
+        <header class="hud__header">
+          <h1>Ascend: Serpent Trials</h1>
+          <p>UX-first playable slice</p>
+        </header>
+        <div class="panel dice-panel">
+          <button id="rollButton" class="primary">Roll Dice</button>
+          <div class="dice-readout">
+            <span class="label">Result</span>
+            <span id="diceValue">—</span>
+          </div>
+        </div>
+        <div class="panel stats-panel">
+          <div>
+            <span class="label">Tile</span>
+            <span id="tileValue">1</span>
+          </div>
+          <div>
+            <span class="label">Turns</span>
+            <span id="turnValue">0</span>
+          </div>
+          <div>
+            <span class="label">Quiz Accuracy</span>
+            <span id="accuracyValue">0%</span>
+          </div>
+          <div>
+            <span class="label">Ladders</span>
+            <span id="ladderValue">0</span>
+          </div>
+          <div>
+            <span class="label">Snakes</span>
+            <span id="snakeValue">0</span>
+          </div>
+        </div>
+        <div class="panel tip-panel">
+          <h2>Guidance</h2>
+          <p id="tipText">
+            Throw the die to wake the island. The host will ease you through the
+            first turns.
+          </p>
+        </div>
+        <div class="panel log-panel">
+          <h2>Event Log</h2>
+          <ul id="logList"></ul>
+        </div>
+      </section>
+    </main>
+    <div
+      id="quizModal"
+      class="modal hidden"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="quizTitle"
+    >
+      <div class="modal-content">
+        <h2 id="quizTitle">Snake Lifeline</h2>
+        <p class="meta" id="quizCategory"></p>
+        <p id="quizQuestion" class="question"></p>
+        <div id="quizAnswers" class="answers"></div>
+        <p id="quizTimer" class="footnote"></p>
+      </div>
+    </div>
+    <div id="toast" class="toast hidden" role="status" aria-live="assertive"></div>
+    <script type="module" src="./main.js"></script>
+  </body>
+</html>
