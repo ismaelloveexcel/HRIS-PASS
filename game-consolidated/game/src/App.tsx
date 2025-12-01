@@ -7,11 +7,14 @@ import { PlayerHud } from './components/PlayerHud';
 import { QuizModal } from './components/QuizModal';
 import { SharkAlert } from './components/SharkAlert';
 import { Skybox } from './components/Skybox';
+import { AssetPipelinePanel } from './components/AssetPipelinePanel';
 import { TutorialOverlay } from './components/TutorialOverlay';
 import { VictoryBanner } from './components/VictoryBanner';
 import { useGameEngine } from './hooks/useGameEngine';
 import { useImmersiveEffects } from './hooks/useImmersiveEffects';
 import { useShakeToRoll } from './hooks/useShakeToRoll';
+import { useAssetManifest } from './hooks/useAssetManifest';
+import { useSoundscape } from './hooks/useSoundscape';
 
 const FASTEST_STORAGE_KEY = 'ascend-fastest-turns';
 const TUTORIAL_STORAGE_KEY = 'ascend-tutorial-complete';
@@ -48,6 +51,8 @@ function App() {
   } = useGameEngine();
 
   useImmersiveEffects(immersiveEvent);
+  useSoundscape(timeOfDay);
+  const assetRecords = useAssetManifest();
 
   const [fastestWin, setFastestWin] = useState<number | null>(() => readStoredNumber(FASTEST_STORAGE_KEY));
   const [lastWinTurns, setLastWinTurns] = useState<number | null>(null);
@@ -144,6 +149,7 @@ function App() {
               turnCount={turnCount}
             />
             <EventFeed events={eventLog} />
+            {assetRecords.length ? <AssetPipelinePanel assets={assetRecords} /> : null}
           </div>
         </section>
       </main>

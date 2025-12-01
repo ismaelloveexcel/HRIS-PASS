@@ -273,6 +273,82 @@ main {
   gap: 1rem;
 }
 
+.asset-panel {
+  padding: 1rem;
+  border-radius: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.04);
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.asset-panel header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.75rem;
+  color: #9cc6ff;
+}
+
+.asset-panel ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.asset-panel li {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.6rem;
+  padding: 0.5rem 0.2rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.asset-name {
+  margin: 0;
+  font-weight: 600;
+}
+
+.asset-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.2rem;
+}
+
+.asset-pill {
+  border-radius: 999px;
+  padding: 0.15rem 0.65rem;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+}
+
+.asset-mocked {
+  background: rgba(255, 209, 106, 0.15);
+  color: #ffd16a;
+}
+
+.asset-captured {
+  background: rgba(111, 255, 242, 0.15);
+  color: #6efff2;
+}
+
+.asset-todo {
+  background: rgba(255, 111, 145, 0.15);
+  color: #ff6f91;
+}
+
+.asset-size {
+  font-size: 0.75rem;
+  opacity: 0.7;
+}
+
 .hud-meta {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));

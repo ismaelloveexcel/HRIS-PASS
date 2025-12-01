@@ -1,6 +1,5 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import { BOARD_SIZE, ladders, mysteryTiles, snakes } from '../data/board';
-import { drawQuestion } from '../data/questions';
 import type {
   ActiveQuiz,
   EventLogEntry,
@@ -9,6 +8,8 @@ import type {
   SharkAlert,
   TimeOfDay,
 } from '../types';
+import { quizService } from '../services/quizService';
+import { gameTransport } from '../services/gameTransport';
 
 type ImmersivePayload = {
   type: ImmersiveEvent['type'];
@@ -46,6 +47,7 @@ export const useGameEngine = () => {
   const [turnCount, setTurnCount] = useState(0);
   const [winnerId, setWinnerId] = useState<number | null>(null);
   const [immersiveEvent, setImmersiveEvent] = useState<ImmersiveEvent | null>(null);
+  const quizRequestIdRef = useRef(0);
 
   const timeOfDay = TIME_OF_DAY_LOOP[turnCount % TIME_OF_DAY_LOOP.length];
 
@@ -95,6 +97,10 @@ export const useGameEngine = () => {
             turns: turnCount + 1,
           } satisfies ImmersivePayload),
         );
+        gameTransport.publish({
+          type: 'victory',
+          payload: { playerId: player.id, turns: turnCount + 1 },
+        });
         pushEvent({
           tone: 'success',
           message: `${player.name} crowns themselves Champion of the Serpent Trials!`,
@@ -152,11 +158,16 @@ export const useGameEngine = () => {
           return;
         }
 
-        setActiveQuiz({
-          snake,
-          playerId: player.id,
-          playerName: player.name,
-          question: drawQuestion(snake.theme),
+        quizRequestIdRef.current += 1;
+        const requestId = quizRequestIdRef.current;
+        quizService.fetchQuestion(snake.theme).then((question) => {
+          if (quizRequestIdRef.current !== requestId) return;
+          setActiveQuiz({
+            snake,
+            playerId: player.id,
+            playerName: player.name,
+            question,
+          });
         });
         emitImmersiveEvent(
           ({
@@ -238,6 +249,10 @@ export const useGameEngine = () => {
           tone: 'success',
           message: `${playerName} aces the quiz. ${snake.label} becomes a ladder!`,
         });
+        gameTransport.publish({
+          type: 'quiz-success',
+          payload: { playerId: player.id, snakeStart: snake.start },
+        });
         setTimeout(() => resolveTile(updated), 350);
       } else {
         const fallen = {
@@ -250,6 +265,10 @@ export const useGameEngine = () => {
         pushEvent({
           tone: 'danger',
           message: `${playerName} misses the lifeline. ${snake.label} drags them to ${snake.end}.`,
+        });
+        gameTransport.publish({
+          type: 'quiz-failure',
+          payload: { playerId: player.id, snakeStart: snake.start },
         });
         emitImmersiveEvent(
           ({
@@ -285,6 +304,7 @@ export const useGameEngine = () => {
           value,
         } satisfies ImmersivePayload),
       );
+      gameTransport.publish({ type: 'roll', payload: { playerId: current.id, value } });
 
       if (proposed > BOARD_SIZE) {
         pushEvent({
