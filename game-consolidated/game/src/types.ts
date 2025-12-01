@@ -63,3 +63,46 @@ export interface SharkAlert {
   playerName: string;
   severity: Snake['severity'];
 }
+
+export type ImmersiveEvent =
+  | {
+      id: string;
+      timestamp: number;
+      type: 'dice-roll';
+      playerName: string;
+      value: number;
+    }
+  | {
+      id: string;
+      timestamp: number;
+      type: 'ladder';
+      playerName: string;
+      ladderLabel: string;
+    }
+  | {
+      id: string;
+      timestamp: number;
+      type: 'snake-warning';
+      playerName: string;
+      snakeLabel: string;
+    }
+  | {
+      id: string;
+      timestamp: number;
+      type: 'snake-bite';
+      playerName: string;
+      snakeLabel: string;
+    }
+  | {
+      id: string;
+      timestamp: number;
+      type: 'quiz-correct';
+      playerName: string;
+    }
+  | {
+      id: string;
+      timestamp: number;
+      type: 'victory';
+      playerName: string;
+      turns: number;
+    };

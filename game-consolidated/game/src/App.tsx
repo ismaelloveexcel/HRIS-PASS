@@ -1,3 +1,4 @@
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import './App.css';
 import { DiceTray } from './components/DiceTray';
 import { EventFeed } from './components/EventFeed';
@@ -6,8 +7,26 @@ import { PlayerHud } from './components/PlayerHud';
 import { QuizModal } from './components/QuizModal';
 import { SharkAlert } from './components/SharkAlert';
 import { Skybox } from './components/Skybox';
+import { TutorialOverlay } from './components/TutorialOverlay';
 import { VictoryBanner } from './components/VictoryBanner';
 import { useGameEngine } from './hooks/useGameEngine';
+import { useImmersiveEffects } from './hooks/useImmersiveEffects';
+import { useShakeToRoll } from './hooks/useShakeToRoll';
+
+const FASTEST_STORAGE_KEY = 'ascend-fastest-turns';
+const TUTORIAL_STORAGE_KEY = 'ascend-tutorial-complete';
+
+const readStoredNumber = (key: string): number | null => {
+  if (typeof window === 'undefined') return null;
+  const stored = window.localStorage.getItem(key);
+  const parsed = stored ? Number(stored) : Number.NaN;
+  return Number.isFinite(parsed) ? parsed : null;
+};
+
+const tutorialSeen = () => {
+  if (typeof window === 'undefined') return false;
+  return window.localStorage.getItem(TUTORIAL_STORAGE_KEY) === 'true';
+};
 
 function App() {
   const {
@@ -24,7 +43,64 @@ function App() {
     timeOfDay,
     winner,
     resetGame,
+    turnCount,
+    immersiveEvent,
   } = useGameEngine();
+
+  useImmersiveEffects(immersiveEvent);
+
+  const [fastestWin, setFastestWin] = useState<number | null>(() => readStoredNumber(FASTEST_STORAGE_KEY));
+  const [lastWinTurns, setLastWinTurns] = useState<number | null>(null);
+  const [shareSupported, setShareSupported] = useState(false);
+  const [showTutorial, setShowTutorial] = useState(() => !tutorialSeen());
+
+  useEffect(() => {
+    if (typeof navigator === 'undefined') return;
+    setShareSupported(typeof navigator.share === 'function');
+  }, []);
+
+  useEffect(() => {
+    if (!winner) return;
+    const turnsTaken = Math.max(1, turnCount + 1);
+    setLastWinTurns(turnsTaken);
+    setFastestWin((prev) => {
+      if (prev === null || turnsTaken < prev) {
+        if (typeof window !== 'undefined') {
+          window.localStorage.setItem(FASTEST_STORAGE_KEY, String(turnsTaken));
+        }
+        return turnsTaken;
+      }
+      return prev;
+    });
+  }, [turnCount, winner]);
+
+  const dismissTutorial = useCallback(() => {
+    setShowTutorial(false);
+    if (typeof window !== 'undefined') {
+      window.localStorage.setItem(TUTORIAL_STORAGE_KEY, 'true');
+    }
+  }, []);
+
+  const canShake = Boolean(currentPlayer) && !isRolling && !activeQuiz && !winner;
+  const { hintActive, needsPermission, requestPermission, isMobileReady } = useShakeToRoll({
+    onShake: rollDice,
+    canShake,
+  });
+
+  const disableRoll = Boolean(activeQuiz) || Boolean(winner);
+  const liveTurnCount = useMemo(() => Math.max(1, turnCount + 1), [turnCount]);
+
+  const handleShareVictory = useCallback(() => {
+    if (!shareSupported || !winner || typeof navigator === 'undefined' || typeof navigator.share !== 'function') return;
+    const turnsTaken = lastWinTurns ?? liveTurnCount;
+    navigator
+      .share({
+        title: 'Ascend: Serpent Trials',
+        text: `I just won Ascend: Serpent Trials in ${turnsTaken} turns! Beat me?`,
+        url: typeof window !== 'undefined' ? window.location.href : undefined,
+      })
+      .catch(() => undefined);
+  }, [lastWinTurns, liveTurnCount, shareSupported, winner]);
 
   return (
     <div className="app-shell">
@@ -51,11 +127,22 @@ function App() {
               isRolling={isRolling}
               onRoll={rollDice}
               currentPlayerName={currentPlayer?.name}
-              disabled={Boolean(activeQuiz) || Boolean(winner)}
+              disabled={disableRoll}
+              shakeHintVisible={hintActive}
+              shakeHintNeedsPermission={needsPermission}
+              onEnableShake={() => {
+                void requestPermission();
+              }}
+              canShake={isMobileReady}
             />
           </div>
           <div className="sidebar">
-            <PlayerHud players={players} currentPlayerId={currentPlayer?.id} />
+            <PlayerHud
+              players={players}
+              currentPlayerId={currentPlayer?.id}
+              highScore={fastestWin}
+              turnCount={turnCount}
+            />
             <EventFeed events={eventLog} />
           </div>
         </section>
@@ -63,7 +150,14 @@ function App() {
 
       {activeQuiz && <QuizModal quiz={activeQuiz} onResolve={resolveQuiz} />}
       <SharkAlert alert={sharkAlert} />
-      <VictoryBanner winner={winner} onReset={resetGame} />
+      <VictoryBanner
+        winner={winner}
+        onReset={resetGame}
+        onShare={handleShareVictory}
+        shareSupported={shareSupported}
+        turnsTaken={winner ? lastWinTurns ?? liveTurnCount : null}
+      />
+      {showTutorial ? <TutorialOverlay onDismiss={dismissTutorial} /> : null}
     </div>
   );
 }

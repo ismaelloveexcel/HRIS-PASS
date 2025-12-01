@@ -1,73 +1,44 @@
-# React + TypeScript + Vite
+# Ascend: Serpent Trials
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+An ultra-mobile polished React + Vite experience inspired by Squid Game tension. Install it as a PWA, shake your phone to roll, and chase the fastest-win leaderboard with a fully expanded 100+ question bank.
 
-Currently, two official plugins are available:
+## Getting Started
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+The app runs at `http://localhost:5173` by default.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## Available Scripts
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+| Script | Description |
+| ------ | ----------- |
+| `npm run dev` | Start the Vite dev server with hot reload |
+| `npm run build` | Type-check and build the production bundle |
+| `npm run preview` | Preview the production build locally |
+| `npm run deploy` | Build and push the `dist/` folder to GitHub Pages via `gh-pages` |
+
+## Feature Highlights
+
+- **Installable PWA** with offline cache, manifest, and maskable icons generated from the Vite mark.
+- **Immersive feedback**: procedural Web Audio cues, canvas-confetti bursts, and device haptics for dice rolls, ladders, quizzes, and victory.
+- **Shake-to-roll mobile controls** powered by the DeviceMotion API plus a pulsing on-turn hint.
+- **Robust content**: 100+ curated quiz questions across STEM, pop culture, and Squid Game lore categories.
+- **Player-focused UX**: high-score tracker via `localStorage`, Web Share button on victory, interactive first-run tutorial, and mobile-first layout refinements.
+
+## Deploying to GitHub Pages
+
+1. Make sure the `gh-pages` branch is available (the `gh-pages` package will create/update it).
+2. Run:
+   ```bash
+   npm run deploy
+   ```
+3. Configure the repository’s Pages settings to serve from the `gh-pages` branch / root if it isn’t already.
+
+## Performance Notes
+
+- Canvas confetti is lazy-loaded so it doesn’t bloat the initial bundle.
+- Web Audio context spins up only after a user gesture, keeping autoplay policies happy.
+- Shake detection is gated behind capability checks and an opt-in permission flow to preserve 60 fps on incompatible devices.
