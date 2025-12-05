@@ -4,6 +4,8 @@ import http from 'node:http';
 import { Server } from 'socket.io';
 import { z } from 'zod';
 
+import Hyperbeam from 'hyperbeam';
+
 import { WorldStore } from './worldStore';
 import type { WorldSnapshot } from '../src/state/types';
 
@@ -20,6 +22,10 @@ const io = new Server(server, {
 
 const store = new WorldStore();
 await store.init();
+
+const hyperbeamClient = process.env.HYPERBEAM_API_KEY
+  ? new Hyperbeam({ apiKey: process.env.HYPERBEAM_API_KEY })
+  : null;
 
 const joinSchema = z.object({
   worldCode: z.string().min(1),
@@ -80,6 +86,30 @@ io.on('connection', (socket) => {
       socket.to(worldCode.toUpperCase()).emit('world:update', updated);
     } catch (error) {
       socket.emit('world:error', (error as Error).message);
+    }
+  });
+
+  socket.on('cinema:start', async ({ worldCode, token }: { worldCode: string; token: string }) => {
+    if (!hyperbeamClient) {
+      socket.emit('world:error', 'Hyperbeam API key missing on server');
+      return;
+    }
+    if (!store.validateSession(worldCode, token)) {
+      socket.emit('world:error', 'Invalid session');
+      return;
+    }
+    try {
+      const session = await hyperbeamClient.sessions.create({
+        url: 'https://movies2watch.cc/home/',
+      });
+      io.to(worldCode.toUpperCase()).emit('cinema:session', {
+        embedUrl: session.embed_url,
+        adminToken: session.admin_token,
+        sessionId: session.id,
+      });
+    } catch (error) {
+      console.error('Hyperbeam error', error);
+      socket.emit('world:error', 'Unable to start Hyperbeam session');
     }
   });
 

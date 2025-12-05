@@ -403,6 +403,40 @@
   opacity: 0.5;
 }
 
+.hyperbeam-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.hyperbeam-frame {
+  width: min(900px, 90vw);
+  height: min(600px, 80vh);
+  background: #000;
+  border-radius: 24px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px;
+}
+
+.hyperbeam-frame iframe {
+  flex: 1;
+  border: none;
+  border-radius: 16px;
+}
+
+.hyperbeam-frame button {
+  align-self: flex-end;
+  border-radius: 999px;
+  padding: 8px 14px;
+}
+
 .world-gate {
   min-height: 100vh;
   display: flex;
