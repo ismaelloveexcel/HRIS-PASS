@@ -1,0 +1,64 @@
+# Personal House & Garden System
+
+A fully-playable web experience that gives every player a persistent home, garden, forge laboratory, and Tamagotchi-inspired pet. It is designed to run on Replit with zero backend work—state is persisted locally via Zustand + `localStorage`, and the entire experience ships as a Vite + React app.
+
+## Recommended stack
+
+- **React 18 + TypeScript + Vite (SWC)** — fast HMR on Replit, zero-config builds.
+- **Zustand (with `persist`)** — state management for rooms, garden grid, forge progress, pet stats, and achievements.
+- **Custom SVG asset pack** — handcrafted furniture, plants, animals, and pet skins (no placeholder boxes).
+- **CSS utility tokens** — keeps the UI cohesive while allowing mood presets to recolor the whole scene.
+
+This stack keeps the project lightweight enough for Replit while still supporting complex editors, drag-and-drop furniture placement, live pet simulation, and the Doodle-God-style crafting system.
+
+## Features
+
+- **House atelier**
+  - Four rooms (living room, cinema corner, arcade den, bedroom) with drag-to-move furniture, tint controls, wall/floor palettes, and roof highlights.
+  - Furniture catalog grows as you forge new items or clear achievements (e.g., cinema rug after watching a movie).
+  - Mood presets instantly recolor the world (Sunrise Glow, Rainy Cozy, Nightfall Biolume, etc.).
+
+- **Garden steward**
+  - 7×7 layout grid where each tile can hold a plant, decoration, or habitat (flower beds, palm trees, veggie patches, ponds, lantern fences, animals, seasonal decor).
+  - Garden care buttons record rituals (watering, feeding) and unlock achievements that grant new catalog entries.
+
+- **Element forge**
+  - Drag-and-drop inspired system where any two discovered elements can be fused (Fire + Wood → Lantern, Story Spark + Canvas → Story Mural, etc.).
+  - Forge outputs unlock new furniture, garden entities, pet skins, or entire mood presets.
+
+- **Pet habitat (Tamagotchi loop)**
+  - Persistent pet with hunger, happiness, energy, and cleanliness stats that decay over time.
+  - Actions (feed, play, groom, rest) raise stats and count toward achievements.
+  - Multiple unlockable pet skins (Sproutling, Luma Bloom, Meadow Guardian).
+
+- **Memories & mailbox**
+  - Discovery log records every forge success and achievement, acting as a scrapbook.
+  - Mailbox items deliver rewards (e.g., tutorial letter that grants the first mood preset).
+
+## Running on Replit
+
+1. **Create a new Replit project** using the Node.js template.
+2. **Upload or clone** this repository into the Replit workspace (e.g., `git clone <repo-url>`).
+3. In the Replit shell, run:
+   ```bash
+   npm install
+   npm run dev -- --host 0.0.0.0 --port 3000
+   ```
+4. Replit will expose port `3000`; open the provided web preview URL. All state persists in the browser, so every player keeps their personalized world between sessions on the same machine/profile.
+
+## Local development
+
+```bash
+npm install
+npm run dev        # start Vite dev server
+npm run build      # type-check + production build
+```
+
+## Extending the experience
+
+- Hook `useGameStore` into a real backend (Supabase, Firebase, or your own API) by swapping the Zustand `persist` middleware with network calls.
+- Add multiplayer visits by syncing garden/house layouts via websockets.
+- Introduce seasonal content drops by appending new SVG assets to the catalogs and gating them behind limited-time achievements.
+
+Enjoy turning everyday rituals into a tiny, persistent universe!
+}
