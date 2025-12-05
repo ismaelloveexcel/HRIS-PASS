@@ -8,12 +8,19 @@ import { baseElements, advancedElements, elementRecipes } from '../data/elements
 import { moodPresets } from '../data/moods';
 import { achievementList } from '../data/achievements';
 import { petSkins } from '../data/pet';
+import { storyPropBlueprints } from '../data/storyProps';
+import { seasonalEvents } from '../data/events';
 import type {
   AchievementDefinition,
   ElementDefinition,
   ElementRecipe,
   GardenTile,
   HouseItemInstance,
+  ClockState,
+  StoryPropState,
+  StoryPropEntry,
+  PhotoEntry,
+  CinemaSession,
   PlayerStats,
   RoomKey,
 } from './types';
@@ -24,7 +31,7 @@ export interface MailItem {
   body: string;
   claimed: boolean;
   reward?: {
-    type: 'element' | 'decor' | 'garden' | 'pet' | 'mood';
+    type: 'element' | 'decor' | 'garden' | 'pet' | 'mood' | 'prop';
     id: string;
   };
 }
@@ -33,7 +40,7 @@ interface DiscoveryEntry {
   id: string;
   label: string;
   detail: string;
-  category: 'forge' | 'achievement' | 'memory';
+  category: 'forge' | 'achievement' | 'memory' | 'photo' | 'cinema';
   timestamp: number;
 }
 
@@ -52,6 +59,7 @@ export interface GameStoreState {
   roomThemes: Record<RoomKey, { walls: string; floor: string }>;
   roofColor: string;
   activeMoodId: string;
+  clock: ClockState;
   houseItems: HouseItemInstance[];
   selectedItemId: string | null;
   unlockedFurniture: string[];
@@ -59,6 +67,10 @@ export interface GameStoreState {
   unlockedElements: string[];
   unlockedMoods: string[];
   unlockedPetSkins: string[];
+  storyProps: StoryPropState[];
+  photos: PhotoEntry[];
+  activeEventId: string | null;
+  cinemaSessions: CinemaSession[];
   achievementsUnlocked: string[];
   discoveredRecipes: string[];
   gardenTiles: GardenTile[];
@@ -79,7 +91,7 @@ export interface GameStoreState {
   registerGardenCare: (action: 'plant' | 'water' | 'feed') => void;
   incrementStat: (metric: keyof PlayerStats, amount?: number) => void;
   combineElements: (a: string, b: string) => { success: boolean; message: string };
-  unlockById: (payload: { type: 'decor' | 'garden' | 'mood' | 'pet' | 'element'; id: string }) => void;
+  unlockById: (payload: { type: 'decor' | 'garden' | 'mood' | 'pet' | 'element' | 'prop'; id: string }) => void;
   checkAchievements: () => void;
   recordMovieNight: () => void;
   recordArcadeWin: () => void;
@@ -89,6 +101,11 @@ export interface GameStoreState {
   clearMailboxItem: (id: string) => void;
   setActiveMood: (id: string) => void;
   equipPetSkin: (id: string) => void;
+  updateClock: (date?: Date) => void;
+  toggleSkySync: (value: boolean) => void;
+  addStoryEntry: (propId: string, entry: Omit<StoryPropEntry, 'id' | 'timestamp'>) => void;
+  capturePhoto: (payload: { caption: string; stickers: string[]; dataUrl: string | null }) => void;
+  logCinemaSession: (notes: string) => void;
 }
 
 const roomDefaults: Record<RoomKey, { walls: string; floor: string }> = {
@@ -164,6 +181,53 @@ const recipeMap = elementRecipes.reduce((acc, recipe) => {
   return acc;
 }, {} as Record<string, ElementRecipe>);
 
+const initialClock: ClockState = {
+  timeOfDay: 'sunrise',
+  weather: 'clear',
+  followRealSky: true,
+};
+
+const createStoryProps = (): StoryPropState[] =>
+  storyPropBlueprints.map((prop) => ({
+    ...prop,
+    entries: [],
+    unlocked: !prop.unlockedBy,
+  }));
+
+const timeMoodMap: Record<ClockState['timeOfDay'], string> = {
+  sunrise: 'mood:sunrise',
+  day: 'mood:rainy',
+  evening: 'mood:festival',
+  night: 'mood:nightfall',
+};
+
+const timeOfDayFromHour = (hour: number): ClockState['timeOfDay'] => {
+  if (hour >= 5 && hour < 10) return 'sunrise';
+  if (hour >= 10 && hour < 17) return 'day';
+  if (hour >= 17 && hour < 21) return 'evening';
+  return 'night';
+};
+
+const rollWeather = (hour: number, hasFestival: boolean): ClockState['weather'] => {
+  if (hasFestival) return 'festival';
+  if (hour >= 21 || hour < 6) return 'mist';
+  return Math.random() < 0.25 ? 'rain' : 'clear';
+};
+
+const dayOfYear = (date: Date) => {
+  const start = new Date(date.getFullYear(), 0, 0);
+  const diff = date.getTime() - start.getTime();
+  const oneDay = 1000 * 60 * 60 * 24;
+  return Math.floor(diff / oneDay);
+};
+
+const isWithinEventWindow = (day: number, start: number, end: number) => {
+  if (start <= end) {
+    return day >= start && day <= end;
+  }
+  return day >= start || day <= end;
+};
+
 export const useGameStore = create<GameStoreState>()(
   persist(
     (set, get) => ({
@@ -172,12 +236,17 @@ export const useGameStore = create<GameStoreState>()(
       roofColor: '#7dd3fc',
       houseItems: [],
       activeMoodId: 'mood:sunrise',
+      clock: { ...initialClock },
       selectedItemId: null,
       unlockedFurniture: baseFurnitureUnlocks,
       unlockedGarden: baseGardenUnlocks,
       unlockedElements: initialElements,
       unlockedMoods: ['mood:sunrise', 'mood:rainy'],
       unlockedPetSkins: ['pet:sprout'],
+      storyProps: createStoryProps(),
+      photos: [],
+      activeEventId: null,
+      cinemaSessions: [],
       achievementsUnlocked: [],
       discoveredRecipes: [],
       gardenTiles: createGardenTiles(),
@@ -284,6 +353,18 @@ export const useGameStore = create<GameStoreState>()(
           if (type === 'element' && !state.unlockedElements.includes(id)) {
             return { unlockedElements: [...state.unlockedElements, id] } as Partial<GameStoreState>;
           }
+          if (type === 'prop') {
+            return {
+              storyProps: state.storyProps.map((prop) =>
+                prop.id === id
+                  ? {
+                      ...prop,
+                      unlocked: true,
+                    }
+                  : prop,
+              ),
+            } as Partial<GameStoreState>;
+          }
           return {};
         });
       },
@@ -313,6 +394,9 @@ export const useGameStore = create<GameStoreState>()(
         get().incrementStat('forgeCombos');
         if (recipe.result.type === 'element') {
           return { success: true, message: `${recipe.result.label} discovered!` };
+        }
+        if (recipe.result.type === 'prop') {
+          return { success: true, message: `${recipe.result.label} unlocked in Story Props!` };
         }
         return { success: true, message: `${recipe.result.label} is ready to place!` };
       },
@@ -388,15 +472,58 @@ export const useGameStore = create<GameStoreState>()(
       visitWorld: () => {
         const today = new Date();
         const key = `${today.getFullYear()}-${today.getMonth()}-${today.getDate()}`;
+        let isNewVisit = false;
         set((state) => {
           if (state.visitStamps.includes(key)) {
             return {} as Partial<GameStoreState>;
           }
+          isNewVisit = true;
           return {
             visitStamps: [...state.visitStamps, key],
           } as Partial<GameStoreState>;
         });
         get().incrementStat('visits');
+        get().updateClock(today);
+        if (isNewVisit) {
+          const currentClock = get().clock;
+          if (currentClock.timeOfDay === 'sunrise') {
+            get().incrementStat('flowersPlanted');
+          }
+          if (currentClock.timeOfDay === 'night') {
+            get().incrementStat('arcadeWins');
+          }
+        }
+        const doy = dayOfYear(today);
+        const activeEvent = seasonalEvents.find((event) =>
+          isWithinEventWindow(doy, event.startDayOfYear, event.endDayOfYear),
+        );
+        if (activeEvent && get().activeEventId !== activeEvent.id) {
+          set((state) => {
+            const mailId = `event-${activeEvent.id}`;
+            if (state.mailbox.some((mail) => mail.id === mailId)) {
+              return {
+                activeEventId: activeEvent.id,
+              } as Partial<GameStoreState>;
+            }
+            return {
+              activeEventId: activeEvent.id,
+              mailbox: [
+                ...state.mailbox,
+                {
+                  id: mailId,
+                  title: `${activeEvent.title} is live!`,
+                  body: `${activeEvent.description}\nRewards ready in your catalog.`,
+                  claimed: false,
+                  reward: activeEvent.rewards[0],
+                },
+              ],
+            } as Partial<GameStoreState>;
+          });
+          activeEvent.rewards.slice(1).forEach((reward) => get().unlockById(reward));
+          if (activeEvent.specialElement) {
+            get().unlockById({ type: 'element', id: activeEvent.specialElement });
+          }
+        }
       },
       clearMailboxItem: (id) => {
         const target = get().mailbox.find((item) => item.id === id && !item.claimed);
@@ -422,10 +549,126 @@ export const useGameStore = create<GameStoreState>()(
         if (!get().unlockedPetSkins.includes(id)) return;
         set((state) => ({ pet: { ...state.pet, skinId: id } }));
       },
+      updateClock: (date = new Date()) => {
+        set((state) => {
+          const timeOfDay = timeOfDayFromHour(date.getHours());
+          const weather = rollWeather(date.getHours(), Boolean(state.activeEventId));
+          const nextClock: ClockState = {
+            ...state.clock,
+            timeOfDay,
+            weather: state.clock.followRealSky ? weather : state.clock.weather,
+          };
+          let nextMood = state.activeMoodId;
+          if (state.clock.followRealSky) {
+            const targetMood = timeMoodMap[timeOfDay];
+            if (state.unlockedMoods.includes(targetMood)) {
+              nextMood = targetMood;
+            }
+          }
+          return {
+            clock: nextClock,
+            activeMoodId: nextMood,
+          };
+        });
+      },
+      toggleSkySync: (value) =>
+        set((state) => ({
+          clock: {
+            ...state.clock,
+            followRealSky: value,
+          },
+        })),
+      addStoryEntry: (propId, entry) => {
+        const payload: StoryPropEntry = {
+          id: nanoid(),
+          type: entry.type,
+          content: entry.content,
+          timestamp: Date.now(),
+        };
+        set((state) => ({
+          storyProps: state.storyProps.map((prop) =>
+            prop.id === propId
+              ? {
+                  ...prop,
+                  entries: [...prop.entries, payload],
+                }
+              : prop,
+          ),
+          discoveryLog: [
+            ...state.discoveryLog,
+            {
+              id: payload.id,
+              label: `Story update: ${propId}`,
+              detail: entry.type === 'text' ? entry.content : 'Added a new creative moment.',
+              category: 'memory',
+              timestamp: payload.timestamp,
+            },
+          ],
+        }));
+      },
+      capturePhoto: ({ caption, stickers, dataUrl }) => {
+        const entry: PhotoEntry = {
+          id: nanoid(),
+          caption,
+          stickers,
+          dataUrl,
+          moodId: get().activeMoodId,
+          timestamp: Date.now(),
+        };
+        set((state) => ({
+          photos: [...state.photos, entry],
+          discoveryLog: [
+            ...state.discoveryLog,
+            {
+              id: entry.id,
+              label: 'Photo captured',
+              detail: caption || 'A new snapshot was added to the journal.',
+              category: 'photo',
+              timestamp: entry.timestamp,
+            },
+          ],
+        }));
+      },
+      logCinemaSession: (notes) => {
+        const session: CinemaSession = {
+          id: nanoid(),
+          url: 'https://movies2watch.cc/home/',
+          watchedAt: Date.now(),
+          notes,
+        };
+        set((state) => ({
+          cinemaSessions: [...state.cinemaSessions, session],
+          discoveryLog: [
+            ...state.discoveryLog,
+            {
+              id: session.id,
+              label: 'Shared cinema moment',
+              detail: notes || 'You both enjoyed a movie night.',
+              category: 'cinema',
+              timestamp: session.watchedAt,
+            },
+          ],
+        }));
+        get().recordMovieNight();
+      },
     }),
     {
       name: 'personal-world-state',
-      version: 1,
+      version: 2,
+      migrate: (state: any, version) => {
+        if (!state) return state;
+        if (version < 2) {
+          return {
+            ...state,
+            clock: state.clock ?? { ...initialClock },
+            storyProps: state.storyProps ?? createStoryProps(),
+            photos: state.photos ?? [],
+            activeEventId: state.activeEventId ?? null,
+            cinemaSessions: state.cinemaSessions ?? [],
+          };
+        }
+        return state;
+      },
     },
   ),
 );

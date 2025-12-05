@@ -117,7 +117,7 @@ export const gardenCatalog: GardenCatalogItem[] = [
       <rect x="48" y="78" width="24" height="15" rx="6" fill="#4b5563" />
     `),
     description: 'Clay buddy that celebrates new discoveries.',
-    unlockedBy: 'forge:garden-gnome',
+    unlockedBy: 'garden-gnome',
   },
   {
     id: 'garden-lantern',

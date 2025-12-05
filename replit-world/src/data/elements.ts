@@ -79,6 +79,32 @@ export const advancedElements: ElementDefinition[] = [
     icon: icon('<rect x="16" y="12" width="32" height="40" rx="6" fill="#f8fafc" stroke="#e2e8f0" stroke-width="4" />'),
     discoveredVia: 'earth+air',
   },
+  {
+    id: 'ember',
+    label: 'Ember Core',
+    description: 'Lingering spark collected from campfires.',
+    icon: icon('<circle cx="32" cy="32" r="16" fill="#fb923c" />'),
+    discoveredVia: 'fire+clay',
+  },
+  {
+    id: 'glow-ink',
+    label: 'Glow Ink',
+    description: 'Shimmering ink for projector doodles.',
+    icon: icon('<rect x="18" y="18" width="28" height="36" rx="6" fill="#6366f1" /><rect x="24" y="24" width="16" height="24" rx="4" fill="#c7d2fe" />'),
+    discoveredVia: 'light+mist',
+  },
+  {
+    id: 'ramadan-glow',
+    label: 'Ramadan Glow',
+    description: 'Festival light collected during lantern week.',
+    icon: icon('<path d="M32 8 L40 28 L32 48 L24 28 Z" fill="#fde047" /><circle cx="32" cy="28" r="12" fill="#fef9c3" />'),
+  },
+  {
+    id: 'frostfire',
+    label: 'Frostfire',
+    description: 'Winter aurora flame used for neon roofs.',
+    icon: icon('<path d="M32 10 C42 26 44 36 32 54 C20 36 22 26 32 10 Z" fill="#67e8f9" /><path d="M32 20 C38 30 39 36 32 48" stroke="#a78bfa" stroke-width="4" fill="none" />'),
+  },
 ];
 
 export const elementRecipes: ElementRecipe[] = [
@@ -180,6 +206,72 @@ export const elementRecipes: ElementRecipe[] = [
       description: 'Unlocks a mural wall for collaborative doodles.',
     },
     lore: 'Every spark wants a wall to live on.',
+  },
+  {
+    id: 'wood-light',
+    inputs: ['wood', 'light'],
+    result: {
+      type: 'prop',
+      id: 'prop:campfire',
+      label: 'Glow Campfire',
+      description: 'An interactive firepit for stories.',
+    },
+    lore: 'Warm wood plus light equals the coziest campfire.',
+  },
+  {
+    id: 'story-light',
+    inputs: ['story-spark', 'light'],
+    result: {
+      type: 'prop',
+      id: 'prop:projector',
+      label: 'Doodle Projector',
+      description: 'Sketch directly onto cinema walls.',
+    },
+    lore: 'Stories beamed through light become living movies.',
+  },
+  {
+    id: 'clay-canvas',
+    inputs: ['clay', 'canvas'],
+    result: {
+      type: 'prop',
+      id: 'prop:scrapbook',
+      label: 'Memory Scrapbook',
+      description: 'Paste photos, stickers, and notes together.',
+    },
+    lore: 'Soft clay binds pages into a living book.',
+  },
+  {
+    id: 'ember-life',
+    inputs: ['ember', 'life'],
+    result: {
+      type: 'decor',
+      id: 'glow-roof',
+      label: 'Glow Roof Accent',
+      description: 'Unlocks the neon roofline.',
+    },
+    lore: 'An ember blessed with care becomes a floating aurora.',
+  },
+  {
+    id: 'ramadan-glow-light',
+    inputs: ['ramadan-glow', 'light'],
+    result: {
+      type: 'mood',
+      id: 'mood:festival',
+      label: 'Festival Glow',
+      description: 'Lantern-lit ambience for evening hangs.',
+    },
+    lore: 'Holiday light mixing creates a festival sky.',
+  },
+  {
+    id: 'frostfire-mist',
+    inputs: ['frostfire', 'mist'],
+    result: {
+      type: 'decor',
+      id: 'forge:icicle-path',
+      label: 'Icicle Path',
+      description: 'Winter path skin that sparkles.',
+    },
+    lore: 'Frostfire cools mist into shimmering glass stones.',
   },
   {
     id: 'mist-light',

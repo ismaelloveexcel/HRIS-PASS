@@ -3,12 +3,19 @@ import { useEffect, useMemo, useState } from 'react';
 import './App.css';
 
 import AchievementPanel from './components/achievements/AchievementPanel';
+import ArcadeCabinet from './components/arcade/ArcadeCabinet';
 import ForgeLab from './components/forge/ForgeLab';
 import GardenView from './components/garden/GardenView';
 import HouseView from './components/house/HouseView';
 import MemoryAlbum from './components/memory/MemoryAlbum';
 import MoodBoard from './components/mood/MoodBoard';
 import PetHabitat from './components/pet/PetHabitat';
+import PhotoStudio from './components/photo/PhotoStudio';
+import CinemaLounge from './components/cinema/CinemaLounge';
+import SeasonalEventsPanel from './components/season/SeasonalEventsPanel';
+import StoryPropsPanel from './components/story/StoryPropsPanel';
+import WeatherBar from './components/weather/WeatherBar';
+import ParticleField from './components/shared/ParticleField';
 import { useGameStore, getMoodById } from './state/useGameStore';
 
 const sections = [
@@ -17,6 +24,7 @@ const sections = [
   { id: 'forge', label: 'Forge' },
   { id: 'pet', label: 'Pet' },
   { id: 'memories', label: 'Memories' },
+  { id: 'cinema', label: 'Cinema' },
 ];
 
 function App() {
@@ -49,14 +57,17 @@ function App() {
         return (
           <>
             <GardenView />
-            <PetHabitat />
+            <div className="section-grid two-up">
+              <PetHabitat />
+              <SeasonalEventsPanel />
+            </div>
           </>
         );
       case 'forge':
         return (
           <>
             <ForgeLab />
-            <MemoryAlbum />
+            <AchievementPanel />
           </>
         );
       case 'pet':
@@ -64,19 +75,23 @@ function App() {
       case 'memories':
         return (
           <>
-            <AchievementPanel />
+            <PhotoStudio />
             <MemoryAlbum />
           </>
         );
+      case 'cinema':
+        return <CinemaLounge />;
       case 'house':
       default:
         return (
           <>
+            <WeatherBar />
             <HouseView />
-            <div className="section-grid">
+            <div className="section-grid two-up">
               <MoodBoard />
-              <AchievementPanel />
+              <StoryPropsPanel />
             </div>
+            <ArcadeCabinet />
           </>
         );
     }
@@ -84,6 +99,7 @@ function App() {
 
   return (
     <div className="app-shell" style={{ background: mood?.gradient ?? 'var(--gradient-sky)' }}>
+      <ParticleField />
       <div className="app-frame">
         <div className="hero-panel">
           <div>

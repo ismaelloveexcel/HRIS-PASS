@@ -53,7 +53,7 @@ export interface ElementRecipe {
   id: string;
   inputs: [string, string];
   result: {
-    type: 'element' | 'decor' | 'garden' | 'pet' | 'mood';
+    type: 'element' | 'decor' | 'garden' | 'pet' | 'mood' | 'prop';
     id: string;
     label: string;
     description: string;
@@ -99,4 +99,62 @@ export interface PetSkin {
   label: string;
   svg: string;
   unlockedBy?: string;
+}
+
+export type TimeOfDay = 'sunrise' | 'day' | 'evening' | 'night';
+export type WeatherKind = 'clear' | 'rain' | 'mist' | 'festival';
+
+export interface ClockState {
+  timeOfDay: TimeOfDay;
+  weather: WeatherKind;
+  followRealSky: boolean;
+}
+
+export interface StoryPropEntry {
+  id: string;
+  type: 'audio' | 'sketch' | 'text';
+  content: string;
+  timestamp: number;
+}
+
+export interface StoryProp {
+  id: string;
+  label: string;
+  icon: string;
+  entries: StoryPropEntry[];
+  unlockedBy?: string;
+}
+
+export interface StoryPropState extends StoryProp {
+  unlocked: boolean;
+}
+
+export interface PhotoEntry {
+  id: string;
+  caption: string;
+  stickers: string[];
+  moodId: string;
+  dataUrl: string | null;
+  timestamp: number;
+}
+
+export interface SeasonalEvent {
+  id: string;
+  title: string;
+  timeframe: string;
+  description: string;
+  startDayOfYear: number;
+  endDayOfYear: number;
+  rewards: {
+    type: 'decor' | 'garden' | 'pet' | 'mood' | 'element';
+    id: string;
+  }[];
+  specialElement?: string;
+}
+
+export interface CinemaSession {
+  id: string;
+  url: string;
+  watchedAt: number;
+  notes: string;
 }

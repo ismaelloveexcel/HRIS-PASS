@@ -22,18 +22,30 @@ This stack keeps the project lightweight enough for Replit while still supportin
   - 7×7 layout grid where each tile can hold a plant, decoration, or habitat (flower beds, palm trees, veggie patches, ponds, lantern fences, animals, seasonal decor).
   - Garden care buttons record rituals (watering, feeding) and unlock achievements that grant new catalog entries.
 
-- **Element forge**
-  - Drag-and-drop inspired system where any two discovered elements can be fused (Fire + Wood → Lantern, Story Spark + Canvas → Story Mural, etc.).
-  - Forge outputs unlock new furniture, garden entities, pet skins, or entire mood presets.
+- **Element forge & story props**
+  - Drag-and-drop inspired system where any two discovered elements can be fused (Fire + Wood → Lantern, Clay + Canvas → Scrapbook, Story Spark + Light → Doodle Projector, etc.).
+  - Forge outputs unlock furniture, garden entities, pet skins, mood presets, and interactive story props that store shared notes/doodles.
+
+- **Weather & seasonal rituals**
+  - Real-time clock drives sunrise/day/evening/night moods with particle weather (rain, mist, lantern festivals) and gentle stat bonuses.
+  - Seasonal events (Ramadan lantern week, Winter Stargaze) deliver mailbox quests plus exclusive forge elements (Ramadan Glow, Frostfire).
 
 - **Pet habitat (Tamagotchi loop)**
   - Persistent pet with hunger, happiness, energy, and cleanliness stats that decay over time.
   - Actions (feed, play, groom, rest) raise stats and count toward achievements.
   - Multiple unlockable pet skins (Sproutling, Luma Bloom, Meadow Guardian).
 
+- **Arcade + cinema bonding**
+  - Built-in tic-tac-toe cabinet in the arcade den counts toward shared achievements.
+  - Cinema lounge launches the Movies2Watch portal in a new tab and logs every screening into the scrapbook automatically.
+
+- **Photo studio & scrapbook**
+  - Capture captioned snapshots with stickers; entries sync into the Memory Album beside the discovery log.
+  - Story props (campfire, projector, scrapbook) let you pin jokes, sketches, or “audio note” descriptions per forged keepsake.
+
 - **Memories & mailbox**
-  - Discovery log records every forge success and achievement, acting as a scrapbook.
-  - Mailbox items deliver rewards (e.g., tutorial letter that grants the first mood preset).
+  - Discovery log records forge success, achievements, photo captures, and cinema nights.
+  - Mailbox items deliver rewards (e.g., tutorial letter, seasonal festival invites).
 
 ## Running on Replit
 
@@ -61,4 +73,3 @@ npm run build      # type-check + production build
 - Introduce seasonal content drops by appending new SVG assets to the catalogs and gating them behind limited-time achievements.
 
 Enjoy turning everyday rituals into a tiny, persistent universe!
-}

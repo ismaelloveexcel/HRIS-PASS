@@ -1,10 +1,11 @@
 import { useGameStore } from '../../state/useGameStore';
 
 const MemoryAlbum = () => {
-  const { discoveryLog, mailbox, clearMailboxItem } = useGameStore((state) => ({
+  const { discoveryLog, mailbox, clearMailboxItem, photos } = useGameStore((state) => ({
     discoveryLog: state.discoveryLog,
     mailbox: state.mailbox,
     clearMailboxItem: state.clearMailboxItem,
+    photos: state.photos,
   }));
 
   return (
@@ -22,6 +23,19 @@ const MemoryAlbum = () => {
           </div>
         ))}
         {!discoveryLog.length && <p style={{ color: 'var(--text-muted)' }}>No entries yet.</p>}
+      </div>
+      <div className="divider" />
+      <div className="photo-grid">
+        {photos.slice().reverse().map((photo) => (
+          <div key={photo.id} className="photo-card">
+            <strong>{photo.caption || 'Untitled'}</strong>
+            <span>{photo.stickers.join(' ')}</span>
+            <small style={{ color: 'var(--text-muted)' }}>
+              {new Date(photo.timestamp).toLocaleString()}
+            </small>
+          </div>
+        ))}
+        {!photos.length && <p style={{ color: 'var(--text-muted)' }}>Capture your first photo to see it here.</p>}
       </div>
       <div className="divider" />
       <div className="control-stack">

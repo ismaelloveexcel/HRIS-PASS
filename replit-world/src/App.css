@@ -11,6 +11,8 @@
   display: flex;
   flex-direction: column;
   gap: 24px;
+  position: relative;
+  z-index: 1;
 }
 
 .hero-panel {
@@ -399,4 +401,208 @@
 
 .mail-card.claimed {
   opacity: 0.5;
+}
+
+.weather-bar {
+  position: relative;
+  overflow: hidden;
+}
+
+.weather-bar input[type='checkbox'] {
+  transform: scale(1.2);
+}
+
+.prop-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.prop-card {
+  border: 1px solid rgba(15, 23, 42, 0.1);
+  border-radius: 16px;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.8);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  cursor: pointer;
+  text-align: left;
+}
+
+.prop-card.active {
+  border-color: rgba(47, 107, 255, 0.5);
+  box-shadow: 0 10px 26px rgba(47, 107, 255, 0.15);
+}
+
+.prop-card.locked {
+  opacity: 0.5;
+}
+
+.prop-detail textarea,
+.panel textarea {
+  width: 100%;
+  border-radius: 16px;
+  border: 1px solid rgba(15, 23, 42, 0.1);
+  padding: 12px;
+  font-family: inherit;
+  resize: none;
+}
+
+.arcade-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.arcade-cell {
+  aspect-ratio: 1 / 1;
+  border-radius: 18px;
+  background: #0f172a;
+  color: #fff;
+  font-size: 1.6rem;
+  border: none;
+}
+
+.photo-frame {
+  border: 1px dashed rgba(15, 23, 42, 0.2);
+  border-radius: 24px;
+  padding: 16px;
+  margin-bottom: 12px;
+}
+
+.photo-preview {
+  background: rgba(15, 23, 42, 0.05);
+  border-radius: 16px;
+  padding: 16px;
+  min-height: 80px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sticker-chip {
+  border-radius: 999px;
+  border: 1px solid rgba(15, 23, 42, 0.1);
+  padding: 6px 12px;
+  background: rgba(255, 255, 255, 0.8);
+}
+
+.sticker-chip.active {
+  border-color: rgba(47, 107, 255, 0.5);
+  box-shadow: 0 6px 14px rgba(47, 107, 255, 0.2);
+}
+
+.photo-strip {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.photo-thumb,
+.photo-card {
+  border-radius: 16px;
+  border: 1px solid rgba(15, 23, 42, 0.1);
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.85);
+}
+
+.photo-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px;
+}
+
+.season-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+}
+
+.season-card {
+  border-radius: 18px;
+  border: 1px solid rgba(15, 23, 42, 0.1);
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.8);
+}
+
+.season-card.active {
+  border-color: rgba(249, 115, 22, 0.6);
+  box-shadow: 0 10px 24px rgba(249, 115, 22, 0.2);
+}
+
+.particle-layer {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.particle-layer span {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.6);
+  animation: float 6s linear infinite;
+  top: calc(100% * var(--pos, 0));
+  left: calc(100% * var(--pos, 0));
+}
+
+.particle-layer.weather-rain span {
+  width: 2px;
+  height: 18px;
+  border-radius: 2px;
+  background: rgba(96, 165, 250, 0.6);
+  animation: rain 4s linear infinite;
+}
+
+.particle-layer.weather-mist span {
+  width: 10px;
+  height: 10px;
+  background: rgba(125, 211, 252, 0.4);
+  animation: mist 10s linear infinite;
+}
+
+.particle-layer.weather-festival span {
+  width: 8px;
+  height: 8px;
+  background: rgba(249, 115, 22, 0.8);
+  animation: float 5s linear infinite;
+}
+
+@keyframes float {
+  from {
+    transform: translateY(0) scale(0.8);
+    opacity: 0.4;
+  }
+  to {
+    transform: translateY(-120vh) scale(1.2);
+    opacity: 0;
+  }
+}
+
+@keyframes rain {
+  from {
+    transform: translateY(-20vh);
+    opacity: 0.8;
+  }
+  to {
+    transform: translateY(100vh);
+    opacity: 0;
+  }
+}
+
+@keyframes mist {
+  from {
+    transform: translateY(0) translateX(0);
+    opacity: 0.3;
+  }
+  to {
+    transform: translateY(-30vh) translateX(10vw);
+    opacity: 0;
+  }
 }

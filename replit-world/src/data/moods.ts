@@ -25,4 +25,12 @@ export const moodPresets: MoodPreset[] = [
     accent: '#7dd3fc',
     description: 'Unlocked via forging Mist + Light. Features glowing trims.',
   },
+  {
+    id: 'mood:festival',
+    label: 'Festival Glow',
+    gradient: 'linear-gradient(135deg, #fcd34d 0%, #f0abfc 100%)',
+    ambientSound: null,
+    accent: '#f97316',
+    description: 'Lanterns, sparkles, and holiday warmth from events.',
+  },
 ];
