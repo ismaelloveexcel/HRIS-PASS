@@ -8,77 +8,24 @@ import { baseElements, advancedElements, elementRecipes } from '../data/elements
 import { moodPresets } from '../data/moods';
 import { achievementList } from '../data/achievements';
 import { petSkins } from '../data/pet';
-import { storyPropBlueprints } from '../data/storyProps';
 import { seasonalEvents } from '../data/events';
 import type {
   AchievementDefinition,
   ElementDefinition,
   ElementRecipe,
-  GardenTile,
   HouseItemInstance,
-  ClockState,
-  StoryPropState,
   StoryPropEntry,
   PhotoEntry,
   CinemaSession,
-  PlayerStats,
   RoomKey,
+  WorldSnapshot,
+  ClockState,
+  PlayerStats,
 } from './types';
+import { createDefaultWorldState } from './defaultWorld';
 
-export interface MailItem {
-  id: string;
-  title: string;
-  body: string;
-  claimed: boolean;
-  reward?: {
-    type: 'element' | 'decor' | 'garden' | 'pet' | 'mood' | 'prop';
-    id: string;
-  };
-}
 
-interface DiscoveryEntry {
-  id: string;
-  label: string;
-  detail: string;
-  category: 'forge' | 'achievement' | 'memory' | 'photo' | 'cinema';
-  timestamp: number;
-}
-
-interface PetState {
-  name: string;
-  hunger: number;
-  happiness: number;
-  energy: number;
-  cleanliness: number;
-  lastTick: number;
-  skinId: string;
-}
-
-export interface GameStoreState {
-  selectedRoom: RoomKey;
-  roomThemes: Record<RoomKey, { walls: string; floor: string }>;
-  roofColor: string;
-  activeMoodId: string;
-  clock: ClockState;
-  houseItems: HouseItemInstance[];
-  selectedItemId: string | null;
-  unlockedFurniture: string[];
-  unlockedGarden: string[];
-  unlockedElements: string[];
-  unlockedMoods: string[];
-  unlockedPetSkins: string[];
-  storyProps: StoryPropState[];
-  photos: PhotoEntry[];
-  activeEventId: string | null;
-  cinemaSessions: CinemaSession[];
-  achievementsUnlocked: string[];
-  discoveredRecipes: string[];
-  gardenTiles: GardenTile[];
-  stats: PlayerStats;
-  pet: PetState;
-  visitStamps: string[];
-  discoveryLog: DiscoveryEntry[];
-  mailbox: MailItem[];
+export interface GameStoreState extends WorldSnapshot {
   // derived setters
   setSelectedRoom: (room: RoomKey) => void;
   addHouseItem: (catalogId: string, room: RoomKey) => void;
@@ -108,61 +55,6 @@ export interface GameStoreState {
   logCinemaSession: (notes: string) => void;
 }
 
-const roomDefaults: Record<RoomKey, { walls: string; floor: string }> = {
-  'living-room': { walls: '#fef3eb', floor: '#ffe4d6' },
-  cinema: { walls: '#101f3c', floor: '#1e2f52' },
-  'game-den': { walls: '#0f172a', floor: '#1d2145' },
-  bedroom: { walls: '#f1f5f9', floor: '#e0e7ff' },
-};
-
-const baseStats: PlayerStats = {
-  flowersPlanted: 0,
-  animalsFed: 0,
-  moviesWatched: 0,
-  arcadeWins: 0,
-  forgeCombos: 0,
-  petCareMoments: 0,
-  visits: 0,
-};
-
-const createGardenTiles = (): GardenTile[] => {
-  const tiles: GardenTile[] = [];
-  for (let row = 0; row < 7; row += 1) {
-    for (let col = 0; col < 7; col += 1) {
-      tiles.push({ slot: `r${row}-c${col}`, type: 'empty', contentId: null });
-    }
-  }
-  return tiles;
-};
-
-const baseFurnitureUnlocks = [
-  'cloud-sofa',
-  'starlit-bed',
-  'aurora-table',
-  'levi-shelf',
-  'cosmo-carpet',
-  'lumen-lamp',
-  'memory-poster',
-  'teddy-colossus',
-  'cinema-booth',
-  'arcade-holo',
-];
-
-const baseGardenUnlocks = [
-  'flower-bed',
-  'date-palm',
-  'cherry-blossom',
-  'mango-tree',
-  'veggie-patch',
-  'stone-path',
-  'garden-fence',
-  'rabbit-burrow',
-  'ramadan-lanterns',
-  'winter-lights',
-];
-
-const initialElements = baseElements.map((element) => element.id);
-
 const mergeElements = (definitions: ElementDefinition[]): Record<string, ElementDefinition> =>
   definitions.reduce((acc, element) => {
     acc[element.id] = element;
@@ -180,19 +72,6 @@ const recipeMap = elementRecipes.reduce((acc, recipe) => {
   acc[recipeKey(recipe.inputs[0], recipe.inputs[1])] = recipe;
   return acc;
 }, {} as Record<string, ElementRecipe>);
-
-const initialClock: ClockState = {
-  timeOfDay: 'sunrise',
-  weather: 'clear',
-  followRealSky: true,
-};
-
-const createStoryProps = (): StoryPropState[] =>
-  storyPropBlueprints.map((prop) => ({
-    ...prop,
-    entries: [],
-    unlocked: !prop.unlockedBy,
-  }));
 
 const timeMoodMap: Record<ClockState['timeOfDay'], string> = {
   sunrise: 'mood:sunrise',
@@ -231,46 +110,7 @@ const isWithinEventWindow = (day: number, start: number, end: number) => {
 export const useGameStore = create<GameStoreState>()(
   persist(
     (set, get) => ({
-      selectedRoom: 'living-room',
-      roomThemes: roomDefaults,
-      roofColor: '#7dd3fc',
-      houseItems: [],
-      activeMoodId: 'mood:sunrise',
-      clock: { ...initialClock },
-      selectedItemId: null,
-      unlockedFurniture: baseFurnitureUnlocks,
-      unlockedGarden: baseGardenUnlocks,
-      unlockedElements: initialElements,
-      unlockedMoods: ['mood:sunrise', 'mood:rainy'],
-      unlockedPetSkins: ['pet:sprout'],
-      storyProps: createStoryProps(),
-      photos: [],
-      activeEventId: null,
-      cinemaSessions: [],
-      achievementsUnlocked: [],
-      discoveredRecipes: [],
-      gardenTiles: createGardenTiles(),
-      stats: baseStats,
-      pet: {
-        name: 'Lumi',
-        hunger: 80,
-        happiness: 80,
-        energy: 80,
-        cleanliness: 80,
-        lastTick: Date.now(),
-        skinId: 'pet:sprout',
-      },
-      visitStamps: [],
-      discoveryLog: [],
-      mailbox: [
-        {
-          id: 'welcome-letter',
-          title: 'Welcome Home',
-          body: 'Decorate any room to claim your first mood charm.',
-          claimed: false,
-          reward: { type: 'mood', id: 'mood:sunrise' },
-        },
-      ],
+      ...createDefaultWorldState(),
       setSelectedRoom: (room) => set({ selectedRoom: room, selectedItemId: null }),
       addHouseItem: (catalogId, room) => {
         const item: HouseItemInstance = {
@@ -658,13 +498,14 @@ export const useGameStore = create<GameStoreState>()(
       migrate: (state: any, version) => {
         if (!state) return state;
         if (version < 2) {
+          const fallback = createDefaultWorldState();
           return {
             ...state,
-            clock: state.clock ?? { ...initialClock },
-            storyProps: state.storyProps ?? createStoryProps(),
-            photos: state.photos ?? [],
-            activeEventId: state.activeEventId ?? null,
-            cinemaSessions: state.cinemaSessions ?? [],
+            clock: state.clock ?? fallback.clock,
+            storyProps: state.storyProps ?? fallback.storyProps,
+            photos: state.photos ?? fallback.photos,
+            activeEventId: state.activeEventId ?? fallback.activeEventId,
+            cinemaSessions: state.cinemaSessions ?? fallback.cinemaSessions,
           };
         }
         return state;

@@ -158,3 +158,59 @@ export interface CinemaSession {
   watchedAt: number;
   notes: string;
 }
+
+export interface MailItem {
+  id: string;
+  title: string;
+  body: string;
+  claimed: boolean;
+  reward?: {
+    type: 'element' | 'decor' | 'garden' | 'pet' | 'mood' | 'prop';
+    id: string;
+  };
+}
+
+export interface DiscoveryEntry {
+  id: string;
+  label: string;
+  detail: string;
+  category: 'forge' | 'achievement' | 'memory' | 'photo' | 'cinema';
+  timestamp: number;
+}
+
+export interface PetState {
+  name: string;
+  hunger: number;
+  happiness: number;
+  energy: number;
+  cleanliness: number;
+  lastTick: number;
+  skinId: string;
+}
+
+export interface WorldSnapshot {
+  selectedRoom: RoomKey;
+  roomThemes: Record<RoomKey, { walls: string; floor: string }>;
+  roofColor: string;
+  activeMoodId: string;
+  clock: ClockState;
+  houseItems: HouseItemInstance[];
+  selectedItemId: string | null;
+  unlockedFurniture: string[];
+  unlockedGarden: string[];
+  unlockedElements: string[];
+  unlockedMoods: string[];
+  unlockedPetSkins: string[];
+  storyProps: StoryPropState[];
+  photos: PhotoEntry[];
+  activeEventId: string | null;
+  cinemaSessions: CinemaSession[];
+  achievementsUnlocked: string[];
+  discoveredRecipes: string[];
+  gardenTiles: GardenTile[];
+  stats: PlayerStats;
+  pet: PetState;
+  visitStamps: string[];
+  discoveryLog: DiscoveryEntry[];
+  mailbox: MailItem[];
+}

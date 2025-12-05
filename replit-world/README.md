@@ -54,17 +54,31 @@ This stack keeps the project lightweight enough for Replit while still supportin
 3. In the Replit shell, run:
    ```bash
    npm install
-   npm run dev -- --host 0.0.0.0 --port 3000
+   npm run dev:full   # runs Vite + Node backend together
    ```
-4. Replit will expose port `3000`; open the provided web preview URL. All state persists in the browser, so every player keeps their personalized world between sessions on the same machine/profile.
+4. Replit will expose the Vite preview on port `3000` and the API/WebSocket server on port `4000`. The front-end still works offline, but the backend now handles shared saves and realtime sync.
 
 ## Local development
 
 ```bash
 npm install
 npm run dev        # start Vite dev server
+npm run server     # start Node backend only
+npm run dev:full   # run both via concurrently
 npm run build      # type-check + production build
 ```
+
+## Backend sync (multiplayer foundation)
+
+- `/server/index.ts` hosts an Express + Socket.IO service that stores world snapshots inside `server/data/worlds.json`.
+- REST endpoints:
+  - `POST /api/world/join` → create/join a world code, returns session token + state.
+  - `GET /api/world/:code` → fetch the latest state (used for hydration/offline recovery).
+  - `POST /api/world/:code/state` → persist the full snapshot (requires session token).
+- Socket events:
+  - `world:join` joins a realtime room (validates session) and streams `world:state`.
+  - `world:update` pushes state changes to everyone else in the room.
+- The server is ready for integrating true co-editing, shared quests, and other multiplayer touches. Client wiring happens next so both of you can edit the same world simultaneously from different browsers.
 
 ## Extending the experience
 
