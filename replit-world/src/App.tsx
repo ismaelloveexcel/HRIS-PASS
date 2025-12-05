@@ -44,12 +44,14 @@ function App() {
     unlockedElements,
     visitWorld,
     activeMoodId,
+    caretakerPoints,
   } = useGameStore((state) => ({
     stats: state.stats,
     gardenTiles: state.gardenTiles,
     unlockedElements: state.unlockedElements,
     visitWorld: state.visitWorld,
     activeMoodId: state.activeMoodId,
+    caretakerPoints: state.caretakerPoints,
   }));
 
   useWorldSync(session);
@@ -201,6 +203,10 @@ function App() {
             <div className="stat-card">
               <span>World code</span>
               <span className="stat-value">{session.worldCode}</span>
+            </div>
+            <div className="stat-card">
+              <span>Caretaker score</span>
+              <span className="stat-value">{caretakerPoints}</span>
             </div>
           </div>
         </div>

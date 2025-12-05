@@ -21,6 +21,8 @@ import type {
   WorldSnapshot,
   ClockState,
   PlayerStats,
+  CaretakerEntry,
+  BucketListItem,
 } from './types';
 import { createDefaultWorldState } from './defaultWorld';
 
@@ -55,6 +57,9 @@ export interface GameStoreState extends WorldSnapshot {
   logCinemaSession: (notes: string) => void;
   loadWorldSnapshot: (snapshot: WorldSnapshot) => void;
   getWorldSnapshot: () => WorldSnapshot;
+  addCaretakerEntry: (entry: Omit<CaretakerEntry, 'id' | 'timestamp'>) => void;
+  addBucketItem: (payload: { title: string; source: string; addedBy: string }) => void;
+  toggleBucketItem: (id: string) => void;
 }
 
 const mergeElements = (definitions: ElementDefinition[]): Record<string, ElementDefinition> =>
@@ -164,9 +169,26 @@ export const useGameStore = create<GameStoreState>()(
       registerGardenCare: (action) => {
         if (action === 'plant') {
           get().incrementStat('flowersPlanted');
+          get().addCaretakerEntry({
+            type: 'plant',
+            description: 'Planted new blooms in the garden.',
+            points: 5,
+          });
         }
         if (action === 'feed') {
           get().incrementStat('animalsFed');
+          get().addCaretakerEntry({
+            type: 'feed',
+            description: 'Fed the habitat buddies.',
+            points: 4,
+          });
+        }
+        if (action === 'water') {
+          get().addCaretakerEntry({
+            type: 'water',
+            description: 'Watered shared trees and flowers.',
+            points: 3,
+          });
         }
       },
       incrementStat: (metric, amount = 1) => {
@@ -310,6 +332,17 @@ export const useGameStore = create<GameStoreState>()(
           return { pet };
         });
         get().incrementStat('petCareMoments');
+        const descriptions: Record<'feed' | 'play' | 'groom' | 'rest', string> = {
+          feed: 'Shared a tasty snack with the pet.',
+          play: 'Played a mini-game with the pet.',
+          groom: 'Pampered the pet with a cozy grooming session.',
+          rest: 'Helped the pet recharge with a nap.',
+        };
+        get().addCaretakerEntry({
+          type: 'pet',
+          description: descriptions[action],
+          points: action === 'play' ? 4 : 3,
+        });
       },
       visitWorld: () => {
         const today = new Date();
@@ -492,11 +525,55 @@ export const useGameStore = create<GameStoreState>()(
           ],
         }));
         get().recordMovieNight();
+        get().addCaretakerEntry({
+          type: 'movie',
+          description: `Watched together: ${notes || 'Movie night'}`,
+          points: 4,
+        });
       },
       loadWorldSnapshot: (snapshot) => {
         set(() => ({ ...snapshot }));
       },
       getWorldSnapshot: () => pickWorldSnapshot(get()),
+      addCaretakerEntry: ({ type, description, points }) => {
+        const entry: CaretakerEntry = {
+          id: nanoid(),
+          type,
+          description,
+          points,
+          timestamp: Date.now(),
+        };
+        set((state) => ({
+          caretakerLog: [entry, ...state.caretakerLog].slice(0, 200),
+          caretakerPoints: state.caretakerPoints + points,
+        }));
+      },
+      addBucketItem: ({ title, source, addedBy }) => {
+        const item: BucketListItem = {
+          id: nanoid(),
+          title,
+          source,
+          addedBy,
+          status: 'planned',
+          addedAt: Date.now(),
+        };
+        set((state) => ({
+          bucketList: [item, ...state.bucketList],
+        }));
+      },
+      toggleBucketItem: (id) => {
+        set((state) => ({
+          bucketList: state.bucketList.map((item) =>
+            item.id === id
+              ? {
+                  ...item,
+                  status: item.status === 'planned' ? 'watched' : 'planned',
+                  watchedAt: item.status === 'planned' ? Date.now() : undefined,
+                }
+              : item,
+          ),
+        }));
+      },
     }),
     {
       name: 'personal-world-state',

@@ -21,6 +21,7 @@ This stack keeps the project lightweight enough for Replit while still supportin
 - **Garden steward**
   - 7×7 layout grid where each tile can hold a plant, decoration, or habitat (flower beds, palm trees, veggie patches, ponds, lantern fences, animals, seasonal decor).
   - Garden care buttons record rituals (watering, feeding) and unlock achievements that grant new catalog entries.
+  - Caretaker log + point system tracks kindness streaks (watering, feeding, movie nights) unlocking stickers and bragging rights.
 
 - **Element forge & story props**
   - Drag-and-drop inspired system where any two discovered elements can be fused (Fire + Wood → Lantern, Clay + Canvas → Scrapbook, Story Spark + Light → Doodle Projector, etc.).
@@ -37,7 +38,7 @@ This stack keeps the project lightweight enough for Replit while still supportin
 
 - **Arcade + cinema bonding**
   - Built-in tic-tac-toe cabinet in the arcade den counts toward shared achievements.
-  - Cinema lounge launches the Movies2Watch portal in a new tab and logs every screening into the scrapbook automatically.
+  - Cinema lounge now embeds Hyperbeam watch parties (requires API key) so you literally see the exact same stream, log notes, and work through a shared bucket list of shows.
 
 - **Photo studio & scrapbook**
   - Capture captioned snapshots with stickers; entries sync into the Memory Album beside the discovery log.
@@ -85,5 +86,6 @@ npm run build      # type-check + production build
 - Hook `useGameStore` into a real backend (Supabase, Firebase, or your own API) by swapping the Zustand `persist` middleware with network calls.
 - Add multiplayer visits by syncing garden/house layouts via websockets.
 - Introduce seasonal content drops by appending new SVG assets to the catalogs and gating them behind limited-time achievements.
+- Enable Hyperbeam by setting `HYPERBEAM_API_KEY` (server) + `VITE_HYPERBEAM_KEY` (client) and the cinema lounge will spin up a shared virtual screen with one click.
 
 Enjoy turning everyday rituals into a tiny, persistent universe!

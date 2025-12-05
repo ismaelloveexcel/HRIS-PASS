@@ -5,6 +5,7 @@ import { SOCKET_URL } from '../../config';
 import { useGameStore } from '../../state/useGameStore';
 import { loadSession } from '../../utils/session';
 import HyperbeamEmbed from './HyperbeamEmbed';
+import CinemaBucketList from './CinemaBucketList';
 
 const CinemaLounge = () => {
   const { logCinemaSession, cinemaSessions } = useGameStore((state) => ({
@@ -78,6 +79,7 @@ const CinemaLounge = () => {
         {!cinemaSessions.length && <p style={{ color: 'var(--text-muted)' }}>No cinema nights logged yet.</p>}
       </div>
       {hyperbeamUrl && <HyperbeamEmbed embedUrl={hyperbeamUrl} onClose={() => setHyperbeamUrl(null)} />}
+      <CinemaBucketList />
     </div>
   );
 };

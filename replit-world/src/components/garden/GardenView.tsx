@@ -4,6 +4,7 @@ import classNames from 'classnames';
 import { gardenCatalog } from '../../data/garden';
 import { useGameStore, getGardenItemById } from '../../state/useGameStore';
 import type { GardenTile } from '../../state/types';
+import CaretakerPanel from './CaretakerPanel';
 
 const categories: { id: 'plant' | 'decor' | 'habitat'; label: string }[] = [
   { id: 'plant', label: 'Plants' },
@@ -52,11 +53,12 @@ const GardenView = () => {
   };
 
   const handleCareAction = (type: 'water' | 'feed') => {
-    registerGardenCare(type === 'water' ? 'plant' : 'feed');
+    registerGardenCare(type);
   };
 
   return (
-    <div className="panel">
+    <>
+      <div className="panel">
       <div className="control-row" style={{ justifyContent: 'space-between' }}>
         <div>
           <p className="badge">Garden & pet habitat</p>
@@ -135,7 +137,9 @@ const GardenView = () => {
           </div>
         </div>
       </div>
-    </div>
+      </div>
+      <CaretakerPanel />
+    </>
   );
 };
 

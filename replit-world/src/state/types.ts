@@ -205,6 +205,9 @@ export interface WorldSnapshot {
   photos: PhotoEntry[];
   activeEventId: string | null;
   cinemaSessions: CinemaSession[];
+  caretakerLog: CaretakerEntry[];
+  caretakerPoints: number;
+  bucketList: BucketListItem[];
   achievementsUnlocked: string[];
   discoveredRecipes: string[];
   gardenTiles: GardenTile[];
@@ -219,4 +222,22 @@ export interface WorldSession {
   worldCode: string;
   token: string;
   playerName: string;
+}
+
+export interface CaretakerEntry {
+  id: string;
+  type: 'water' | 'plant' | 'feed' | 'pet' | 'movie' | 'quest';
+  description: string;
+  points: number;
+  timestamp: number;
+}
+
+export interface BucketListItem {
+  id: string;
+  title: string;
+  source: string;
+  addedBy: string;
+  status: 'planned' | 'watched';
+  addedAt: number;
+  watchedAt?: number;
 }
