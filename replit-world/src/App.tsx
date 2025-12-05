@@ -16,6 +16,11 @@ import SeasonalEventsPanel from './components/season/SeasonalEventsPanel';
 import StoryPropsPanel from './components/story/StoryPropsPanel';
 import WeatherBar from './components/weather/WeatherBar';
 import ParticleField from './components/shared/ParticleField';
+import WorldGate from './components/shared/WorldGate';
+import { useWorldSync } from './hooks/useWorldSync';
+import { fetchWorld } from './api/worldClient';
+import { loadSession, clearSession } from './utils/session';
+import type { WorldSession } from './state/types';
 import { useGameStore, getMoodById } from './state/useGameStore';
 
 const sections = [
@@ -29,6 +34,9 @@ const sections = [
 
 function App() {
   const [activeSection, setActiveSection] = useState('house');
+  const [session, setSession] = useState<WorldSession | null>(() => loadSession());
+  const [loadingWorld, setLoadingWorld] = useState(Boolean(session));
+  const [syncError, setSyncError] = useState<string | null>(null);
 
   const {
     stats,
@@ -44,9 +52,34 @@ function App() {
     activeMoodId: state.activeMoodId,
   }));
 
+  useWorldSync(session);
+
   useEffect(() => {
+    if (!session) return;
+    let cancelled = false;
+    setLoadingWorld(true);
+    fetchWorld(session.worldCode)
+      .then((snapshot) => {
+        if (cancelled) return;
+        useGameStore.getState().loadWorldSnapshot(snapshot);
+        setLoadingWorld(false);
+        setSyncError(null);
+      })
+      .catch((error) => {
+        console.error('Failed to load shared world', error);
+        if (cancelled) return;
+        setLoadingWorld(false);
+        setSyncError('Unable to reach the shared world server. Continuing with local data.');
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [session]);
+
+  useEffect(() => {
+    if (!session || loadingWorld) return;
     visitWorld();
-  }, [visitWorld]);
+  }, [visitWorld, session, loadingWorld]);
 
   const filledTiles = useMemo(() => gardenTiles.filter((tile) => tile.contentId).length, [gardenTiles]);
   const mood = getMoodById(activeMoodId);
@@ -97,6 +130,32 @@ function App() {
     }
   };
 
+  const handleSession = (newSession: WorldSession) => {
+    setSession(newSession);
+    setLoadingWorld(false);
+  };
+
+  const handleSwitchWorld = () => {
+    clearSession();
+    setSession(null);
+  };
+
+  if (!session) {
+    return <WorldGate onSession={handleSession} />;
+  }
+
+  if (loadingWorld) {
+    return (
+      <div className="world-gate">
+        <div className="panel" style={{ maxWidth: 420 }}>
+          <p className="badge">Sync</p>
+          <h2>Loading your shared world…</h2>
+          <p className="panel-subtitle">Hang tight while we fetch the latest garden + house state.</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="app-shell" style={{ background: mood?.gradient ?? 'var(--gradient-sky)' }}>
       <ParticleField />
@@ -109,6 +168,7 @@ function App() {
               Every login becomes a ritual: redecorate the living room, plant new flowers, forge
               silly inventions, and care for the glowing pet. Everything saves—so memories pile up.
             </p>
+            {syncError && <p style={{ color: 'var(--danger)' }}>{syncError}</p>}
             <div className="hero-actions">
               <button type="button" onClick={() => setActiveSection('house')}>
                 Jump to house
@@ -119,6 +179,9 @@ function App() {
                 onClick={() => setActiveSection('forge')}
               >
                 Visit forge
+              </button>
+              <button type="button" className="secondary" onClick={handleSwitchWorld}>
+                Switch world
               </button>
             </div>
           </div>
@@ -134,6 +197,10 @@ function App() {
             <div className="stat-card">
               <span>Elements ready</span>
               <span className="stat-value">{unlockedElements.length}</span>
+            </div>
+            <div className="stat-card">
+              <span>World code</span>
+              <span className="stat-value">{session.worldCode}</span>
             </div>
           </div>
         </div>

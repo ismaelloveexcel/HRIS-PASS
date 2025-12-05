@@ -214,3 +214,9 @@ export interface WorldSnapshot {
   discoveryLog: DiscoveryEntry[];
   mailbox: MailItem[];
 }
+
+export interface WorldSession {
+  worldCode: string;
+  token: string;
+  playerName: string;
+}

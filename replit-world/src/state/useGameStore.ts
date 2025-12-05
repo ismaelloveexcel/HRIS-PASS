@@ -53,6 +53,8 @@ export interface GameStoreState extends WorldSnapshot {
   addStoryEntry: (propId: string, entry: Omit<StoryPropEntry, 'id' | 'timestamp'>) => void;
   capturePhoto: (payload: { caption: string; stickers: string[]; dataUrl: string | null }) => void;
   logCinemaSession: (notes: string) => void;
+  loadWorldSnapshot: (snapshot: WorldSnapshot) => void;
+  getWorldSnapshot: () => WorldSnapshot;
 }
 
 const mergeElements = (definitions: ElementDefinition[]): Record<string, ElementDefinition> =>
@@ -491,6 +493,10 @@ export const useGameStore = create<GameStoreState>()(
         }));
         get().recordMovieNight();
       },
+      loadWorldSnapshot: (snapshot) => {
+        set(() => ({ ...snapshot }));
+      },
+      getWorldSnapshot: () => pickWorldSnapshot(get()),
     }),
     {
       name: 'personal-world-state',
@@ -522,3 +528,38 @@ export const getAchievementById = (id: string): AchievementDefinition | undefine
   achievementList.find((achievement) => achievement.id === id);
 export const getElementById = (id: string): ElementDefinition | undefined => elementDefinitions[id];
 export const getRecipeById = (id: string): ElementRecipe | undefined => elementRecipes.find((recipe) => recipe.id === id);
+
+export const pickWorldSnapshot = (state: GameStoreState): WorldSnapshot => {
+  const {
+    setSelectedRoom: _setSelectedRoom,
+    addHouseItem: _addHouseItem,
+    updateHouseItem: _updateHouseItem,
+    removeHouseItem: _removeHouseItem,
+    setRoomColor: _setRoomColor,
+    setRoofColor: _setRoofColor,
+    setSelectedItem: _setSelectedItem,
+    setGardenTile: _setGardenTile,
+    registerGardenCare: _registerGardenCare,
+    incrementStat: _incrementStat,
+    combineElements: _combineElements,
+    unlockById: _unlockById,
+    checkAchievements: _checkAchievements,
+    recordMovieNight: _recordMovieNight,
+    recordArcadeWin: _recordArcadeWin,
+    tickPet: _tickPet,
+    careForPet: _careForPet,
+    visitWorld: _visitWorld,
+    clearMailboxItem: _clearMailboxItem,
+    setActiveMood: _setActiveMood,
+    equipPetSkin: _equipPetSkin,
+    updateClock: _updateClock,
+    toggleSkySync: _toggleSkySync,
+    addStoryEntry: _addStoryEntry,
+    capturePhoto: _capturePhoto,
+    logCinemaSession: _logCinemaSession,
+    loadWorldSnapshot: _loadWorldSnapshot,
+    getWorldSnapshot: _getWorldSnapshot,
+    ...snapshot
+  } = state;
+  return snapshot;
+};
