@@ -65,6 +65,34 @@ An alternative lightweight HTML/JavaScript prototype.
 
 **Original Source:** HRIS-PASS repository, branch `cursor/review-and-build-game-gpt-5.1-codex-high-8f56`
 
+### bonding-game/ Directory (Social Features)
+
+A multiplayer social experience featuring garden caretaking and cinema lounge with real-time world synchronization.
+
+| Path | Description |
+|------|-------------|
+| `bonding-game/README.md` | Comprehensive documentation of bonding game features |
+| `bonding-game/INTEGRATION.md` | Guide for integrating bonding game with main game |
+| `bonding-game/package.json` | Project dependencies and scripts |
+| `bonding-game/tsconfig.server.json` | TypeScript configuration for server |
+| `bonding-game/.env.example` | Environment variables template |
+| `bonding-game/src/components/garden/` | Garden UI components |
+| `bonding-game/src/components/cinema/` | Cinema lounge components |
+| `bonding-game/src/api/worldClient.ts` | World state API client |
+| `bonding-game/src/hooks/useWorldSync.ts` | World synchronization hook |
+| `bonding-game/src/utils/session.ts` | Session management utilities |
+| `bonding-game/src/config.ts` | Configuration settings |
+| `bonding-game/server/worldStore.ts` | Server-side world state management |
+| `bonding-game/types/hyperbeam.d.ts` | Hyperbeam type definitions |
+
+**Key Features:**
+- 🌱 **Garden Caretaker:** Collaborative plant growing and caretaking
+- 🎬 **Cinema Lounge:** Watch content together with Hyperbeam integration
+- 🌍 **World Sync:** Real-time persistent world state across sessions
+- 👥 **Multiplayer:** Session-based multi-user interactions
+
+**Original Source:** `/workspace/replit-world/` (organized structure for integration)
+
 ## How to Run
 
 ### Main React Game (game/)
@@ -101,6 +129,37 @@ An alternative lightweight HTML/JavaScript prototype.
 ### HTML Prototype (game-prototype/)
 
 Simply open `game-prototype/index.html` in a web browser - no build step required.
+
+### Bonding Game (bonding-game/)
+
+1. Navigate to the bonding-game directory:
+   ```bash
+   cd game-consolidated/bonding-game
+   ```
+
+2. Set up environment variables:
+   ```bash
+   cp .env.example .env
+   # Edit .env with your Hyperbeam API key and other settings
+   ```
+
+3. Install dependencies:
+   ```bash
+   npm install
+   ```
+
+4. Start development (client + server):
+   ```bash
+   npm run dev
+   ```
+
+5. Or start separately:
+   ```bash
+   npm run dev:client  # Frontend on http://localhost:5173
+   npm run dev:server  # Backend on http://localhost:3000
+   ```
+
+**Note:** The bonding-game folder contains placeholder files ready for implementation. See `bonding-game/README.md` for detailed documentation.
 
 ## Repositories Scanned
 
@@ -157,4 +216,5 @@ No filename conflicts were encountered during consolidation.
 ---
 
 *Consolidated on: 2025-11-29*
+*Bonding Game added: 2025-12-06*
 *Source Repository: https://github.com/ismaelloveexcel/HRIS-PASS*
