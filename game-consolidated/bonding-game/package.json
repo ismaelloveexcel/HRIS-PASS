@@ -2,7 +2,6 @@
   "name": "bonding-game",
   "version": "0.1.0",
   "description": "Interactive social bonding game with garden caretaking and cinema lounge features",
-  "type": "module",
   "scripts": {
     "dev": "npm run dev:client & npm run dev:server",
     "dev:client": "vite",
