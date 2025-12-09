@@ -132,7 +132,7 @@ npm install
 npm run dev
 
 # Start backend server (if separate)
-npm run server
+npm run dev:server
 ```
 
 ## Features
