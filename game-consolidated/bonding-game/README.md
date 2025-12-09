@@ -39,6 +39,7 @@ bonding-game/
 │   └── hyperbeam.d.ts
 ├── .env.example              # Environment variables template
 ├── tsconfig.server.json      # Server TypeScript config
+├── tsconfig.json            # Client TypeScript config (React)
 ├── package.json              # Project dependencies
 └── README.md                 # This file
 ```
