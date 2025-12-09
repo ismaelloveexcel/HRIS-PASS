@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "description": "Interactive social bonding game with garden caretaking and cinema lounge features",
   "scripts": {
-    "dev": "npm run dev:client & npm run dev:server",
+    "dev": "concurrently \"npm run dev:client\" \"npm run dev:server\"",
     "dev:client": "vite",
     "dev:server": "tsx watch server/index.ts",
     "build": "npm run build:client && npm run build:server",
@@ -23,6 +23,7 @@
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "@vitejs/plugin-react": "^4.3.4",
+    "concurrently": "^9.1.0",
     "eslint": "^9.17.0",
     "eslint-plugin-react-hooks": "^5.1.0",
     "eslint-plugin-react-refresh": "^0.4.16",

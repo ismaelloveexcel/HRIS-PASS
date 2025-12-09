@@ -40,6 +40,7 @@ bonding-game/
 ├── .env.example              # Environment variables template
 ├── tsconfig.server.json      # Server TypeScript config
 ├── tsconfig.json            # Client TypeScript config (React)
+├── vite.config.ts            # Vite build configuration
 ├── package.json              # Project dependencies
 ├── vite.config.ts            # Vite build configuration
 └── README.md                 # This file
@@ -133,7 +134,7 @@ npm install
 # Start development server
 npm run dev
 
-# Start backend server (if separate)
+# Start backend server (in development)
 npm run dev:server
 ```
 
