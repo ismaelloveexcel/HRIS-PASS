@@ -41,6 +41,7 @@ bonding-game/
 ├── tsconfig.server.json      # Server TypeScript config
 ├── tsconfig.json            # Client TypeScript config (React)
 ├── package.json              # Project dependencies
+├── vite.config.ts            # Vite build configuration
 └── README.md                 # This file
 ```
 
