@@ -106,7 +106,7 @@ The following existing files have been updated to integrate with the bonding gam
 ## Getting Started
 
 ### Prerequisites
-- Node.js 16+ 
+- Node.js 18+ 
 - npm or yarn
 
 ### Environment Setup
