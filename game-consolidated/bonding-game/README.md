@@ -100,7 +100,7 @@ The following existing files have been updated to integrate with the bonding gam
 
 ### Backend
 - **Node.js** - Server runtime
-- **Express** - Web server framework (likely)
+- **Express** - Web server framework
 - **World Store** - Custom persistent state management
 
 ## Getting Started
