@@ -1,0 +1,25 @@
+{
+  "name": "Ascend: Serpent Trials",
+  "short_name": "Ascend Trials",
+  "description": "Float above the neon tides, survive quizzes, and seize the glass crown in this cyberpunk board clash.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#05060d",
+  "theme_color": "#05060d",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/pwa-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/pwa-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

@@ -1,13 +1,21 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import { BOARD_SIZE, ladders, mysteryTiles, snakes } from '../data/board';
-import { drawQuestion } from '../data/questions';
 import type {
   ActiveQuiz,
   EventLogEntry,
+  ImmersiveEvent,
   Player,
   SharkAlert,
   TimeOfDay,
 } from '../types';
+import { quizService } from '../services/quizService';
+import { gameTransport } from '../services/gameTransport';
+
+type ImmersivePayload = {
+  type: ImmersiveEvent['type'];
+  playerName: string;
+  [key: string]: string | number;
+};
 
 const TIME_OF_DAY_LOOP: TimeOfDay[] = ['sunrise', 'daylight', 'golden', 'neon'];
 
@@ -38,6 +46,8 @@ export const useGameEngine = () => {
   const [clearedSnakes, setClearedSnakes] = useState<Record<string, boolean>>({});
   const [turnCount, setTurnCount] = useState(0);
   const [winnerId, setWinnerId] = useState<number | null>(null);
+  const [immersiveEvent, setImmersiveEvent] = useState<ImmersiveEvent | null>(null);
+  const quizRequestIdRef = useRef(0);
 
   const timeOfDay = TIME_OF_DAY_LOOP[turnCount % TIME_OF_DAY_LOOP.length];
 
@@ -68,10 +78,29 @@ export const useGameEngine = () => {
     [pushEvent, rotateTurn, winnerId],
   );
 
+  const emitImmersiveEvent = useCallback((event: ImmersivePayload) => {
+    setImmersiveEvent({
+      ...(event as ImmersiveEvent),
+      id: makeId(),
+      timestamp: Date.now(),
+    });
+  }, []);
+
   const resolveTile = useCallback(
     (player: Player) => {
       if (player.position >= BOARD_SIZE) {
         setWinnerId(player.id);
+        emitImmersiveEvent(
+          ({
+            type: 'victory',
+            playerName: player.name,
+            turns: turnCount + 1,
+          } satisfies ImmersivePayload),
+        );
+        gameTransport.publish({
+          type: 'victory',
+          payload: { playerId: player.id, turns: turnCount + 1 },
+        });
         pushEvent({
           tone: 'success',
           message: `${player.name} crowns themselves Champion of the Serpent Trials!`,
@@ -91,6 +120,13 @@ export const useGameEngine = () => {
           tone: 'success',
           message: `${player.name} catches the ${ladder.label} to tile ${ladder.end}.`,
         });
+        emitImmersiveEvent(
+          ({
+            type: 'ladder',
+            playerName: player.name,
+            ladderLabel: ladder.label,
+          } satisfies ImmersivePayload),
+        );
         setTimeout(() => resolveTile(updated), 350);
         return;
       }
@@ -122,12 +158,24 @@ export const useGameEngine = () => {
           return;
         }
 
-        setActiveQuiz({
-          snake,
-          playerId: player.id,
-          playerName: player.name,
-          question: drawQuestion(snake.theme),
+        quizRequestIdRef.current += 1;
+        const requestId = quizRequestIdRef.current;
+        quizService.fetchQuestion(snake.theme).then((question) => {
+          if (quizRequestIdRef.current !== requestId) return;
+          setActiveQuiz({
+            snake,
+            playerId: player.id,
+            playerName: player.name,
+            question,
+          });
         });
+        emitImmersiveEvent(
+          ({
+            type: 'snake-warning',
+            playerName: player.name,
+            snakeLabel: snake.label,
+          } satisfies ImmersivePayload),
+        );
         pushEvent({
           tone: 'danger',
           message: `${player.name} triggers ${snake.label}. Quiz room rising!`,
@@ -166,7 +214,7 @@ export const useGameEngine = () => {
 
       finishTurn(`${player.name} secures tile ${player.position}.`);
     },
-    [clearedSnakes, finishTurn, pushEvent],
+    [clearedSnakes, emitImmersiveEvent, finishTurn, pushEvent, turnCount],
   );
 
   const resolveQuiz = useCallback(
@@ -180,6 +228,12 @@ export const useGameEngine = () => {
       setActiveQuiz(null);
 
       if (isCorrect) {
+        emitImmersiveEvent(
+          ({
+            type: 'quiz-correct',
+            playerName,
+          } satisfies ImmersivePayload),
+        );
         const reward = snake.start - snake.end;
         const newSpot = Math.min(BOARD_SIZE, player.position + reward);
         const updated = {
@@ -195,6 +249,10 @@ export const useGameEngine = () => {
           tone: 'success',
           message: `${playerName} aces the quiz. ${snake.label} becomes a ladder!`,
         });
+        gameTransport.publish({
+          type: 'quiz-success',
+          payload: { playerId: player.id, snakeStart: snake.start },
+        });
         setTimeout(() => resolveTile(updated), 350);
       } else {
         const fallen = {
@@ -208,6 +266,17 @@ export const useGameEngine = () => {
           tone: 'danger',
           message: `${playerName} misses the lifeline. ${snake.label} drags them to ${snake.end}.`,
         });
+        gameTransport.publish({
+          type: 'quiz-failure',
+          payload: { playerId: player.id, snakeStart: snake.start },
+        });
+        emitImmersiveEvent(
+          ({
+            type: 'snake-bite',
+            playerName,
+            snakeLabel: snake.label,
+          } satisfies ImmersivePayload),
+        );
         setSharkAlert({ playerName, severity: snake.severity });
         setTimeout(() => {
           setSharkAlert(null);
@@ -215,7 +284,7 @@ export const useGameEngine = () => {
         }, 1400);
       }
     },
-    [activeQuiz, players, pushEvent, resolveTile],
+    [activeQuiz, emitImmersiveEvent, players, pushEvent, resolveTile],
   );
 
   const rollDice = useCallback(() => {
@@ -228,6 +297,14 @@ export const useGameEngine = () => {
       if (!current) return;
       const proposed = current.position + value;
       setDiceValue(value);
+      emitImmersiveEvent(
+        ({
+          type: 'dice-roll',
+          playerName: current.name,
+          value,
+        } satisfies ImmersivePayload),
+      );
+      gameTransport.publish({ type: 'roll', payload: { playerId: current.id, value } });
 
       if (proposed > BOARD_SIZE) {
         pushEvent({
@@ -244,7 +321,17 @@ export const useGameEngine = () => {
       setIsRolling(false);
       resolveTile(updated);
     }, 400);
-  }, [activeQuiz, currentPlayerIndex, finishTurn, isRolling, players, pushEvent, resolveTile, winnerId]);
+  }, [
+    activeQuiz,
+    currentPlayerIndex,
+    emitImmersiveEvent,
+    finishTurn,
+    isRolling,
+    players,
+    pushEvent,
+    resolveTile,
+    winnerId,
+  ]);
 
   const resetGame = useCallback(() => {
     setPlayers(initialPlayers);
@@ -286,5 +373,7 @@ export const useGameEngine = () => {
     timeOfDay,
     winner,
     resetGame,
+    turnCount,
+    immersiveEvent,
   };
 };
